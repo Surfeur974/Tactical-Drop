@@ -45,9 +45,11 @@ public class ItemCollider : MonoBehaviour
     }
     void Start()
     {
+        node = gridManager.GetNode(coordinates);
     }
     void Update()
     {
+        TestFourSideCollision();
     }
 
 
@@ -100,6 +102,7 @@ public class ItemCollider : MonoBehaviour
         //coordinates = GetComponent<ItemCoordinatesLabeler>().ItemCoordinates;
         coordinates = transform.position;
         node = gridManager.GetNode(coordinates);
+        if(node == null) { return; }
         UpdateRaycastOrigins();
         TestFourSideCollision();
         node.ClearConnection();

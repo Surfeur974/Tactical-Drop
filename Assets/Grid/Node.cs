@@ -10,17 +10,25 @@ public class Node : ScriptableObject
     public List<Node> connectedToVertical = new List<Node>();
     public List<Node> connectedToHorizontal = new List<Node>();
     GridManager gridManager;
+    public bool isMacthed;
+    
 
     private void Awake()
     {
         gridManager = FindObjectOfType<GridManager>();
     }
-    public void Init(Vector2 coordinates, Color color)
+    public void Init(Vector2 coordinates)
     {
         this.coordinates = coordinates;
-        this.color = color;
         UpdateNameObject();
         ClearConnection();
+        isMacthed = false;
+    }
+    public void Init()
+    {
+        UpdateNameObject();
+        ClearConnection();
+        isMacthed = false;
     }
     public void AddVerticalConnection(Node nodeToAdd)
     {
@@ -34,6 +42,21 @@ public class Node : ScriptableObject
         if (!connectedToHorizontal.Contains(nodeToAdd))
         {
             connectedToHorizontal.Add(nodeToAdd);
+        }
+    }
+    public void RemoveVerticalConnection(Node nodeToRemove)
+    {
+
+        if (connectedToVertical.Contains(nodeToRemove))
+        {
+            connectedToVertical.Remove(nodeToRemove);
+        }
+    }
+    public void RemoveHorizontalConnection(Node nodeToRemove)
+    {
+        if (connectedToHorizontal.Contains(nodeToRemove))
+        {
+            connectedToHorizontal.Remove(nodeToRemove);
         }
     }
     public void ClearConnection()
@@ -57,6 +80,19 @@ public class Node : ScriptableObject
     {
         this.name = "(" + coordinates.x + "," + coordinates.y + ")";
     }
+    public void updateNodeColor(Color colorToUpdateTo)
+    {
+        this.color = colorToUpdateTo;
+    }
+    public void UpdateConnectionFromNode()
+    {
+
+    }
+    public void IsMatched(bool state)
+    {
+        isMacthed = state;
+    }
+
 }
 
 

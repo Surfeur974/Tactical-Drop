@@ -30,12 +30,16 @@ public class HandPuller : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.DownArrow) && !isMoving)
         {
             UpHit = itemCollider.GetUpHitInfo();
+
             GameObject gameObjectHitted = UpHit.transform.gameObject;
-            //Debug.Log(gameObjectHitted.name + " Is hitted by Hand");
+            Node ObjectHittedNode = gridManager.GetNode(gameObjectHitted.transform.position);
+            ObjectHittedNode.Init(); //Reset State of node at pull position
             StartCoroutine(Move(gameObjectHitted, gameObjectHitted.transform.position, this.transform.position, false));
             gameObjectHitted.transform.parent = this.transform;
-            //gameObjectHitted.SetActive(false);
             blockstocked.Add(gameObjectHitted.gameObject);
+            ObjectHittedNode.ClearConnection();
+
+            gridManager.UpdateAllNodeConnection();
         }
     }
 
@@ -48,18 +52,16 @@ public class HandPuller : MonoBehaviour
             Vector3 PushPosition = UpHit.transform.position;
             PushPosition += Vector3.down * offset;
             int numberOfBlockStocked = blockstocked.Count;
-            //blockstocked.Reverse();
             for (int i = 0; i < numberOfBlockStocked; i++)
             {
                 StartCoroutine(Move(blockstocked[i], transform.position,PushPosition, true));
                 blockstocked[i].transform.parent = gridManager.transform;
                 blockstocked[i].SetActive(true);
-
-                //Debug.Log("Pull up object to position : " + pullUpPosition);
-
                 PushPosition += Vector3.down;
             }
             blockstocked.Clear();
+
+            gridManager.UpdateAllNodeConnection();
         }
     }
     IEnumerator Move(GameObject objectToMove, Vector3 startposition, Vector3 endposition, bool enableAtEndPosition)
@@ -68,7 +70,7 @@ public class HandPuller : MonoBehaviour
         float t = 0;
         float timeToTravel = 0.1f;
 
-
+        isMoving = true;
         while (t < 1)
         {
             t += timeToTravel;
@@ -79,6 +81,7 @@ public class HandPuller : MonoBehaviour
             yield return null;
         }
         yield return null;
+        isMoving = false;
 
         objectToMove.gameObject.SetActive(enableAtEndPosition);
         objectToMove.GetComponentInChildren<BlockSprite>().transform.localScale = new Vector3(1, 1, 1);

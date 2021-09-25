@@ -11,6 +11,10 @@ public class Block : MonoBehaviour
     [SerializeField] public Node node;
     GridManager gridManager;
     [SerializeField] Vector2 coordinates;
+    [SerializeField] Color matchedColor;
+    Color initColor;
+
+
 
 
 
@@ -20,7 +24,10 @@ public class Block : MonoBehaviour
         gridManager = FindObjectOfType<GridManager>();
         coordinates = GetComponent<ItemCoordinatesLabeler>().ItemCoordinates;
 
-        if(gridManager.Grid.ContainsKey(coordinates))
+        initColor = material.color;
+
+
+        if (gridManager.Grid.ContainsKey(coordinates))
         {
             node = gridManager.GetNode(coordinates);
         }
@@ -28,7 +35,27 @@ public class Block : MonoBehaviour
 
     private void Update()
     {
-        material.color = node.color;
-    }
+        ChangeBlockColor();
 
+        coordinates = GetComponent<ItemCoordinatesLabeler>().ItemCoordinates;
+
+        if (gridManager.Grid.ContainsKey(coordinates))
+        {
+            node = gridManager.GetNode(coordinates);
+            node.updateNodeColor(material.color);
+        }
+
+
+    }
+    private void ChangeBlockColor()
+    {
+        if (node.isMacthed == true)
+        {
+            material.color = Color.black;
+        }
+        else
+        {
+            material.color = initColor;
+        }
+    }
 }

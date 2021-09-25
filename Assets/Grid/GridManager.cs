@@ -80,13 +80,13 @@ public class GridManager : MonoBehaviour
         {
             linkedNodeOfSameColor.Add(linkedNode);
         }
-        if (!IsSameColor(linkedNodeOfSameColor)) //Si pas de la même couleur que le reste, on l'enleve et on return
+        if (!IsSameColor(linkedNodeOfSameColor)) //Si pas de la mï¿½me couleur que le reste, on l'enleve et on return
         {
             linkedNodeOfSameColor.Remove(linkedNode);
             return linkedNodeOfSameColor;
         }
 
-        GetAllVerticalConnectionNodesWithSameColor(linkedNodeOfSameColor, linkedNode); //On recall la fonction de manière recursive pour la node de la connection
+        GetAllVerticalConnectionNodesWithSameColor(linkedNodeOfSameColor, linkedNode); //On recall la fonction de maniï¿½re recursive pour la node de la connection
         return linkedNodeOfSameColor;
     }
 
@@ -97,7 +97,7 @@ public class GridManager : MonoBehaviour
             for (int y = 0; y < gridSize.y; y++)
             {
                 Vector2Int coordinates = new Vector2Int(x, y);
-                if (grid.ContainsKey(coordinates) && !grid[coordinates].isMacthed) //Check tous les node sauf ceux déja matched
+                if (grid.ContainsKey(coordinates) && !grid[coordinates].isMacthed) //Check tous les node sauf ceux dï¿½ja matched
                 {
                     Node node = grid[coordinates];
                     List<Node> nodeList = new List<Node> { node };
@@ -126,33 +126,38 @@ public class GridManager : MonoBehaviour
             return false;
         }
     }
-    public bool IsSameColor(List<Node> nodes) //Si tous les nodes de la liste sont de la même couleur, return true
+    public bool IsSameColor(List<Node> nodes) //Si tous les nodes de la liste sont de la mï¿½me couleur, return true
     {
         Color testColor = new Color();
 
         for (int i = 0; i < nodes.Count; i++)
         {
-            testColor = nodes[0].color;
-
-            if (testColor != nodes[i].color)
+            linkedNode.Add(node.connectedToVertical[i]);
+            if (!IsSameColor(linkedNode))
             {
-                return false;
+                linkedNode.Remove(node.connectedToVertical[i]);
             }
         }
-        return true;
+        return linkedNode;
     }
 
     public void MatchedNodeList(List<Node> nodes)
     {
-        foreach (Node node in nodes)
+        if (node.connectedToVertical.Count == 0) { return linkedNodeOfSameColor; }
+
+        Node linkedNode = node.connectedToVertical[0];
+        node.RemoveVerticalConnection(linkedNode);
+
+        if (!linkedNodeOfSameColor.Contains(linkedNode)) //Si list ne contient pas le linked node
         {
             node.IsMatched(true);
         }
     }//Set all isMatched bool at true for the list
     void PushSpaceToResetGrid() //Press Space to reset Grid et instanciate new blocks and UpdateAllNodeConnection
     {
+        testColor = nodes[0].color;
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (testColor != nodes[i].color)
         {
             ClearGrid();
             CreateGrid();
@@ -192,4 +197,39 @@ public class GridManager : MonoBehaviour
         mainCamera.transform.position = new Vector3(gridSize.x / 2, (gridSize.y) / 2, -13.33f);
     }//Set camera position to middle of the Grid
     //to modifie
+}
+private void PushEnterToTestFotMatched3()
+{
+    if (Input.GetKeyDown(KeyCode.Return))
+    {
+        UpdateAllNodeConnection();
+        GetFirstMatchedVerticalOfSameColor();
+        //IsMatched3Vertical();
+    }
+}
+
+public void UpdateAllNodeConnection()//TODO a refaire avec des events pour updates les collisiton
+{
+    foreach (Transform child in transform)
+    {
+        child.GetComponentInChildren<ItemCollider>().UpdateConnectedTo();
+    }
+    //for (int x = 0; x < gridSize.x; x++)
+    //{
+    //    for (int y = 0; y < gridSize.y; y++)
+    //    {
+    //        Vector2 coordinates = new Vector2(x, y);
+    //        if (grid.ContainsKey(coordinates))
+    //        {
+    //            grid[coordinates].UpdateConnectionFromNode();
+    //        }
+
+    //    }
+    //}
+}
+private void SetCameraToMiddleOfGrid()
+{
+    mainCamera.transform.position = new Vector3(gridSize.x / 2, (gridSize.y) / 2, -13.33f);
+}//Set camera position to middle of the Grid
+
 }

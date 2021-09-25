@@ -7,15 +7,15 @@ public class ItemCollider : MonoBehaviour
     BoxCollider boxCollider;
     RaycastOrigin raycastOrigins;
     float skinWidth = 0.1f;
-    float defaultraycastDistance = 2f;
-    float currentRaycastDistance = 2f;
+    int defaultraycastDistance = 2;
+    int currentRaycastDistance = 2;
     RaycastHit rightHitInfo, leftHitInfo, upHitInfo, downHitInfo;
     GridManager gridManager;
     Node node;
     BoolCollision boolCollision;
-    Vector2 coordinates;
-    Dictionary<Vector2, Node> grid = new Dictionary<Vector2, Node>();
-    public float DefaultraycastDistance {  //GETTER SETTER
+    Vector2Int coordinates;
+    Dictionary<Vector2Int, Node> grid = new Dictionary<Vector2Int, Node>();
+    public int DefaultraycastDistance {  //GETTER SETTER
         get { return defaultraycastDistance; }
         set { defaultraycastDistance = value; }
         }
@@ -100,29 +100,53 @@ public class ItemCollider : MonoBehaviour
     public void UpdateConnectedTo()
     {
         //coordinates = GetComponent<ItemCoordinatesLabeler>().ItemCoordinates;
-        coordinates = transform.position;
+        coordinates = new Vector2Int(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y));
         node = gridManager.GetNode(coordinates);
         if(node == null) { return; }
         UpdateRaycastOrigins();
         TestFourSideCollision();
         node.ClearConnection();
 
-        if (boolCollision.isUpHit && grid.ContainsKey(upHitInfo.transform.position))
+
+        if (boolCollision.isUpHit)
         {
-            node.AddVerticalConnection(grid[upHitInfo.transform.position]);
+            {
+                Vector2Int upHitPosition = (Vector2Int)Vector3Int.RoundToInt(upHitInfo.transform.position);
+                if (grid.ContainsKey(upHitPosition))
+                {
+                    node.AddVerticalConnection(grid[upHitPosition]);
+                }
+            }
         }
-        if (boolCollision.isDownHit && grid.ContainsKey(downHitInfo.transform.position))
+        if (boolCollision.isDownHit)
         {
-            node.AddVerticalConnection(grid[downHitInfo.transform.position]);
+            {
+                Vector2Int downHitPosition = (Vector2Int)Vector3Int.RoundToInt(downHitInfo.transform.position);
+                if (grid.ContainsKey(downHitPosition))
+                {
+                    node.AddVerticalConnection(grid[downHitPosition]);
+                }
+            }
         }
-        if (boolCollision.isLeftHit && grid.ContainsKey(leftHitInfo.transform.position))
+        if (boolCollision.isLeftHit)
         {
-            node.AddHorizontalConnection(grid[leftHitInfo.transform.position]);
+            {
+                Vector2Int leftHitPosition = (Vector2Int)Vector3Int.RoundToInt(leftHitInfo.transform.position);
+                if (grid.ContainsKey(leftHitPosition))
+                {
+                    node.AddHorizontalConnection(grid[leftHitPosition]);
+                }
+            }
         }
-        if (boolCollision.isRightHit && grid.ContainsKey(rightHitInfo.transform.position))
+        if (boolCollision.isRightHit)
         {
-            //Debug.Log("isRightHit is " + boolCollision.isRightHit +" from " + this.name);
-            node.AddHorizontalConnection(grid[rightHitInfo.transform.position]);
+            {
+                Vector2Int rightHitPosition = (Vector2Int)Vector3Int.RoundToInt(rightHitInfo.transform.position);
+                if (grid.ContainsKey(rightHitPosition))
+                {
+                    node.AddHorizontalConnection(grid[rightHitPosition]);
+                }
+            }
         }
     }
 

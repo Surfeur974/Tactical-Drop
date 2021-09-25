@@ -31,12 +31,12 @@ public class HandMover : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.RightArrow) && !isMoving)
         {
 
-            StartCoroutine(Move(Vector3.right));
+            StartCoroutine(Move(Vector3Int.right));
 
         }
         if (Input.GetKeyDown(KeyCode.LeftArrow) && !isMoving)
         {
-            StartCoroutine(Move(Vector3.left));
+            StartCoroutine(Move(Vector3Int.left));
         }
     }
     private void PlaceHandInMiddle()
@@ -44,7 +44,7 @@ public class HandMover : MonoBehaviour
 
     }
 
-    IEnumerator Move(Vector3 direction)
+    IEnumerator Move(Vector3Int direction)
     {
         isMoving = true;
         float t = 0;
@@ -62,7 +62,7 @@ public class HandMover : MonoBehaviour
             t += .01f;
             yield return null;
         }
-        spriteScale.localScale = new Vector3(1, 1, 1);
+        spriteScale.localScale = new Vector3Int(1, 1, 1);
         isMoving = false;
         yield return new WaitForEndOfFrame();
     }

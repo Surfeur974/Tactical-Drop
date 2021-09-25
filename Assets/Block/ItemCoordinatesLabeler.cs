@@ -8,9 +8,9 @@ using TMPro;
 [ExecuteAlways]
 public class ItemCoordinatesLabeler : MonoBehaviour
 {
-    Vector2 itemCoordinates;
+    Vector2Int itemCoordinates;
     TextMeshPro label;
-    public Vector2 ItemCoordinates { get { return itemCoordinates; } }
+    public Vector2Int ItemCoordinates { get { return itemCoordinates; } }
 
     // Start is called before the first frame update
     void Awake()

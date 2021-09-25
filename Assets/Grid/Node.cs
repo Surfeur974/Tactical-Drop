@@ -5,7 +5,7 @@ using UnityEngine;
 [System.Serializable] //to see public value in inspector
 public class Node : ScriptableObject
 {
-    public Vector2 coordinates;
+    public Vector2Int coordinates;
     public Color color;
     public List<Node> connectedToVertical = new List<Node>();
     public List<Node> connectedToHorizontal = new List<Node>();
@@ -17,7 +17,7 @@ public class Node : ScriptableObject
     {
         gridManager = FindObjectOfType<GridManager>();
     }
-    public void Init(Vector2 coordinates)
+    public void Init(Vector2Int coordinates)
     {
         this.coordinates = coordinates;
         UpdateNameObject();

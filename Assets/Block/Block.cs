@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class Block : MonoBehaviour
 {
-    //public Vector2 coordinates;
+    //public Vector2Int coordinates;
     Material material;
     //[SerializeField] public List<Block> connectedToVertical;
     //[SerializeField] public List<Block> connectedToHorizontal;
     [SerializeField] public Node node;
     GridManager gridManager;
-    [SerializeField] Vector2 coordinates;
+    [SerializeField] Vector2Int coordinates;
     [SerializeField] Color matchedColor;
     Color initColor;
 

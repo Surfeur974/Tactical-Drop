@@ -13,8 +13,8 @@ public class HandCollision : MonoBehaviour
     GridManager gridManager;
     Node node;
     BoolCollision boolCollision;
-    Vector2 coordinates;
-    Dictionary<Vector2, Node> grid = new Dictionary<Vector2, Node>();
+    Vector2Int coordinates;
+    Dictionary<Vector2Int, Node> grid = new Dictionary<Vector2Int, Node>();
     public float DefaultraycastDistance
     {  //GETTER SETTER
         get { return defaultraycastDistance; }

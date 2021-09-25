@@ -7,11 +7,16 @@ public class GridManager : MonoBehaviour
     [SerializeField] Block blockPrefab;
     [SerializeField] Color[] colors;
     Dictionary<Vector2Int, Node> grid = new Dictionary<Vector2Int, Node>();
-    Vector2Int gridSize = new Vector2Int(4,4);
+    Vector2Int gridSize = new Vector2Int(8, 8);
     ItemCollider itemCollider;
     [SerializeField] Camera mainCamera;
     int blankLinesOnBottom = 10;
-    int minNumberForVerticalCOmbo = 3;
+    int minNumberForVerticalConnection = 3;
+    Node currentSearchNode;
+    List<Node> linkedNodeOfSameColor = new List<Node>();
+    List<Node> alreadyCheckedNodes = new List<Node>();
+    Queue<Node> nodeToExplored = new Queue<Node>();
+
 
     public Dictionary<Vector2Int, Node> Grid { get { return grid; } }
     public Vector2Int GridSize { get { return gridSize; } }
@@ -29,6 +34,7 @@ public class GridManager : MonoBehaviour
     {
         PushSpaceToResetGrid();
         PushEnterToTestFotMatched3();
+        PushBackSpaceToDematch();
     }
     public Node GetNode(Vector2Int coordinates)
     {
@@ -53,12 +59,21 @@ public class GridManager : MonoBehaviour
         {
             for (int y = 0; y < gridSize.y; y++)
             {
+
                 Vector2Int coordinates = new Vector2Int(x, y);
                 Color blockColor = colors[Random.Range(0, colors.Length)];
 
+                //Color blockColor = colors[0];
+                //if (x == gridSize.x - 1 || x == gridSize.x - 3 || x == gridSize.x - 5) { blockColor = colors[1]; }
+                //if (y == gridSize.y - 4 || y == gridSize.y - 2 || y == gridSize.y - 6) { blockColor = colors[1]; }
+
+                //Color blockColor = colors[0];
+                //if (x == 0) { blockColor = colors[1]; }
+                //if (y == gridSize.y - 7) { blockColor = colors[2]; }
+
                 if (y >= blankLinesOnBottom)
                 {
-                    Block block_ = Instantiate(blockPrefab, new Vector3Int(coordinates.x, coordinates.y,0), Quaternion.identity, transform);
+                    Block block_ = Instantiate(blockPrefab, new Vector3Int(coordinates.x, coordinates.y, 0), Quaternion.identity, transform);
                     block_.GetComponentInChildren<MeshRenderer>().material.color = blockColor;
                 }
 
@@ -69,55 +84,109 @@ public class GridManager : MonoBehaviour
         }
     }
 
-    List<Node> GetAllVerticalConnectionNodesWithSameColor(List<Node> linkedNodeOfSameColor, Node node) //return for a node, all his vertical connections of same color
+
+    private List<Node> GetAllVerticalConnectionNodesWithSameColor(Node node) //return for a node, all his vertical connections of same color
     {
-        if (node.connectedToVertical.Count == 0) { return linkedNodeOfSameColor; }
-
-        Node linkedNode = node.connectedToVertical[0];
-        node.RemoveVerticalConnection(linkedNode);
-
-        if (!linkedNodeOfSameColor.Contains(linkedNode)) //Si list ne contient pas le linked node on l'ajoute
+        alreadyCheckedNodes = new List<Node>();
+        bool isRunning = true;
+        if (node.connectedToVertical.Count == 0) { return alreadyCheckedNodes; }
+        nodeToExplored.Clear();
+        nodeToExplored.Enqueue(node);
+        alreadyCheckedNodes.Add(node);
+        while (nodeToExplored.Count > 0 && isRunning)
         {
-            linkedNodeOfSameColor.Add(linkedNode);
+            currentSearchNode = nodeToExplored.Dequeue();
+            isRunning = CheckConnectedNode(currentSearchNode.connectedToVertical);
         }
-        if (!IsSameColor(linkedNodeOfSameColor)) //Si pas de la m�me couleur que le reste, on l'enleve et on return
+        return alreadyCheckedNodes;
+    }
+    private List<Node> GetAllConnectionNodesWithSameColor(Node node) //return for a node, all his connections of same color, tobe used after 3 vertical detected
+    {
+        alreadyCheckedNodes = new List<Node>();
+        bool isRunning = true;
+        if (node.connectedToVertical.Count == 0 && node.connectedToHorizontal.Count == 0) { return alreadyCheckedNodes; }
+        nodeToExplored.Clear();
+        nodeToExplored.Enqueue(node);
+        alreadyCheckedNodes.Add(node);
+        while (nodeToExplored.Count > 0 && isRunning)
         {
-            linkedNodeOfSameColor.Remove(linkedNode);
-            return linkedNodeOfSameColor;
-        }
+            currentSearchNode = nodeToExplored.Dequeue();
 
-        GetAllVerticalConnectionNodesWithSameColor(linkedNodeOfSameColor, linkedNode); //On recall la fonction de mani�re recursive pour la node de la connection
-        return linkedNodeOfSameColor;
+            List<Node> nodesToChecked = currentSearchNode.connectedToVertical;
+            nodesToChecked.AddRange(currentSearchNode.connectedToHorizontal);
+
+            isRunning = CheckConnectedNode(nodesToChecked);
+        }
+        return alreadyCheckedNodes;
+    }
+    bool CheckConnectedNode(List<Node> nodeToCheck) //Check a list of node, Add it to queue "nodeToExplored" if same color, and to alreadyCheckedNodes List<Node>
+    {
+        for (int i = 0; i < nodeToCheck.Count; i++)
+        {
+            Node connectedNode = nodeToCheck[i];
+            if (!alreadyCheckedNodes.Contains(connectedNode))
+            {
+                alreadyCheckedNodes.Add(connectedNode);
+
+                if (!IsSameColor(alreadyCheckedNodes))
+                {
+                    alreadyCheckedNodes.Remove(connectedNode);
+                }
+                else
+                {
+                    nodeToExplored.Enqueue(connectedNode);
+                }
+            }
+        }
+        return true;
     }
 
-    void HandleFirstMatchedVerticalOfSameColor() //Check throught all block in Grid and handle first match connection
+
+    private List<Node> GetAllHorizontalConnectionNodesWithSameColor(Node node) //return for a node, all his Horizontal connections of same color
+    {
+        alreadyCheckedNodes = new List<Node>();
+        bool isRunning = true;
+        if (node.connectedToHorizontal.Count == 0) { return alreadyCheckedNodes; }
+        nodeToExplored.Clear();
+        nodeToExplored.Enqueue(node);
+        alreadyCheckedNodes.Add(node);
+        while (nodeToExplored.Count > 0 && isRunning)
+        {
+            currentSearchNode = nodeToExplored.Dequeue();
+            isRunning = CheckConnectedNode(currentSearchNode.connectedToHorizontal);
+        }
+        return alreadyCheckedNodes;
+    }
+
+    void HandleFirstMatched() //Check throught all block in Grid and handle first match connection
     {
         for (int x = 0; x < gridSize.x; x++)
         {
             for (int y = 0; y < gridSize.y; y++)
             {
                 Vector2Int coordinates = new Vector2Int(x, y);
-                if (grid.ContainsKey(coordinates) && !grid[coordinates].isMacthed) //Check tous les node sauf ceux d�ja matched
+                if (grid.ContainsKey(coordinates) && !grid[coordinates].isMatched) //Check tous les node sauf ceux déja matched
                 {
                     Node node = grid[coordinates];
-                    List<Node> nodeList = new List<Node> { node };
+                    List<Node> nodeList = new List<Node> {};
 
-                    GetAllVerticalConnectionNodesWithSameColor(nodeList, grid[coordinates]);
-                    if (IsListMinCombo(nodeList))
+                    nodeList.AddRange(GetAllVerticalConnectionNodesWithSameColor(node)); //Met dans une liste un node avec ses connection vertical de la meme couleur
+                    if (IsListMinNumber(nodeList)) //Si Il a 2+ connection vertical on clear la list et on prend toutes ses connection
                     {
-                        //Debug.Log(nodeList.Count);
-                        //Debug.Log(nodeList[0].name);
+                        nodeList.Clear();
+                        nodeList.AddRange(GetAllConnectionNodesWithSameColor(node)); 
+
                         MatchedNodeList(nodeList);
-                        return;  //Remove return to handle all matched at once
+                        //return;  //Remove return to handle all matched at once
                     }
                 }
             }
         }
     }
 
-    private bool IsListMinCombo(List<Node> nodeList)//Si liste.Count >= minNumberForVerticalCOmbo return true
+    private bool IsListMinNumber(List<Node> nodeList)//Si liste.Count >= minNumberForVerticalCOmbo return true
     {
-        if (nodeList.Count >= minNumberForVerticalCOmbo)
+        if (nodeList.Count >= minNumberForVerticalConnection)
         {
             return true;
         }
@@ -146,7 +215,7 @@ public class GridManager : MonoBehaviour
     {
         foreach (Node node in nodes)
         {
-            node.IsMatched(true);
+            node.isMatched = true;
         }
     }//Set all isMatched bool at true for the list
     void PushSpaceToResetGrid() //Press Space to reset Grid et instanciate new blocks and UpdateAllNodeConnection
@@ -164,7 +233,14 @@ public class GridManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Return))
         {
             UpdateAllNodeConnection();
-            HandleFirstMatchedVerticalOfSameColor();
+            HandleFirstMatched();
+        }
+    }
+    private void PushBackSpaceToDematch() //Update all connection and check for one combo
+    {
+        if (Input.GetKeyDown(KeyCode.Backspace))
+        {
+            DematchAll();
         }
     }
 
@@ -174,18 +250,21 @@ public class GridManager : MonoBehaviour
         {
             child.GetComponentInChildren<ItemCollider>().UpdateConnectedTo();
         }
-        //for (int x = 0; x < gridSize.x; x++)
-        //{
-        //    for (int y = 0; y < gridSize.y; y++)
-        //    {
-        //        Vector2Int coordinates = new Vector2Int(x, y);
-        //        if (grid.ContainsKey(coordinates))
-        //        {
-        //            grid[coordinates].UpdateConnectionFromNode();
-        //        }
+    }
+    public void DematchAll()//TODO a refaire avec des events pour updates les collisiton
+    {
+        for (int x = 0; x < gridSize.x; x++)
+        {
+            for (int y = 0; y < gridSize.y; y++)
+            {
+                Vector2Int coordinates = new Vector2Int(x, y);
+                if (grid.ContainsKey(coordinates))
+                {
+                    grid[coordinates].Init();
+                }
 
-        //    }
-        //}
+            }
+        }
     }
     private void SetCameraToMiddleOfGrid()
     {

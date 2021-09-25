@@ -10,8 +10,13 @@ public class Node : ScriptableObject
     public List<Node> connectedToVertical = new List<Node>();
     public List<Node> connectedToHorizontal = new List<Node>();
     GridManager gridManager;
-    public bool isMacthed;
-    
+    public bool isMatched;
+    public bool isInHand;
+    public bool isCHecked;
+
+    public bool IsMatched { get { return isMatched; } }
+    public bool IsInHand { get { return isInHand; } }
+    public bool IsCHecked { get { return isCHecked; } }
 
     private void Awake()
     {
@@ -22,13 +27,14 @@ public class Node : ScriptableObject
         this.coordinates = coordinates;
         UpdateNameObject();
         ClearConnection();
-        isMacthed = false;
+        isMatched = false;
+        isInHand = false;
     }
     public void Init()
     {
         UpdateNameObject();
         ClearConnection();
-        isMacthed = false;
+        isMatched = false;
     }
     public void AddVerticalConnection(Node nodeToAdd)
     {
@@ -44,21 +50,24 @@ public class Node : ScriptableObject
             connectedToHorizontal.Add(nodeToAdd);
         }
     }
-    public void RemoveVerticalConnection(Node nodeToRemove)
+    public void RemoveConnection(Node nodeToRemove)
     {
 
         if (connectedToVertical.Contains(nodeToRemove))
         {
             connectedToVertical.Remove(nodeToRemove);
         }
-    }
-    public void RemoveHorizontalConnection(Node nodeToRemove)
-    {
-        if (connectedToHorizontal.Contains(nodeToRemove))
+        else if (connectedToHorizontal.Contains(nodeToRemove))
         {
             connectedToHorizontal.Remove(nodeToRemove);
         }
+        else
+        {
+            Debug.Log("Cannot remove Node");
+        }
+
     }
+
     public void ClearConnection()
     {
         if(connectedToHorizontal != null)
@@ -87,10 +96,6 @@ public class Node : ScriptableObject
     public void UpdateConnectionFromNode()
     {
 
-    }
-    public void IsMatched(bool state)
-    {
-        isMacthed = state;
     }
 
 }

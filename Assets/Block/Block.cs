@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Block : MonoBehaviour
@@ -13,7 +11,6 @@ public class Block : MonoBehaviour
     [SerializeField] Vector2Int coordinates;
     [SerializeField] Color matchedColor;
     Color initColor;
-
 
 
 
@@ -35,21 +32,22 @@ public class Block : MonoBehaviour
 
     private void Update()
     {
-        ChangeBlockColor();
-
-        coordinates = GetComponent<ItemCoordinatesLabeler>().ItemCoordinates;
-
-        if (gridManager.Grid.ContainsKey(coordinates))
+        if (!node.isInHand)
         {
-            node = gridManager.GetNode(coordinates);
-            node.updateNodeColor(material.color);
+            ChangeBlockColor();
+
+            coordinates = GetComponent<ItemCoordinatesLabeler>().ItemCoordinates;
+
+            if (gridManager.Grid.ContainsKey(coordinates))
+            {
+                node = gridManager.GetNode(coordinates);
+                node.updateNodeColor(material.color);
+            }
         }
-
-
     }
     private void ChangeBlockColor()
     {
-        if (node.isMacthed == true)
+        if (node.isMatched == true)
         {
             material.color = Color.black;
         }
@@ -58,4 +56,10 @@ public class Block : MonoBehaviour
             material.color = initColor;
         }
     }
+    public void HandleInHand(bool isInHand)
+    {
+        node.isInHand = isInHand;
+    }
+
+
 }

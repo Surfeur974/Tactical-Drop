@@ -35,7 +35,7 @@ public class HandPuller : MonoBehaviour
 
             Vector3Int startPosition = new Vector3Int(nodePosition.x, nodePosition.y, 0);
             Vector3Int endPosition = Vector3Int.RoundToInt(this.transform.position);
-            Debug.Log(startPosition);
+            //Debug.Log(startPosition);
 
             //bool testBool = Equals(startPosition, gridManager.GetNode(startPosition).coordinates);
             //Debug.Log(startPosition);
@@ -47,6 +47,7 @@ public class HandPuller : MonoBehaviour
             gameObjectHitted.transform.parent = this.transform;
             blockstored.Add(gameObjectHitted.gameObject);
 
+            gameObjectHitted.GetComponent<Block>().HandleInHand(true);
             gridManager.UpdateAllNodeConnection();
         }
     }
@@ -60,7 +61,7 @@ public class HandPuller : MonoBehaviour
             float maxYPosition = gridManager.GridSize.y;
             Vector3Int startPosition = Vector3Int.RoundToInt(transform.position);
             Vector3Int endPosition = new Vector3Int(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(maxYPosition), 0);
-            Debug.Log(endPosition);
+            //Debug.Log(endPosition);
 
             if (UpHit.transform != null)
             {
@@ -75,6 +76,8 @@ public class HandPuller : MonoBehaviour
                 blockstored[i].transform.parent = gridManager.transform;
                 blockstored[i].SetActive(true);
                 endPosition += Vector3Int.down;
+                blockstored[i].GetComponent<Block>().HandleInHand(false);
+
             }
             blockstored.Clear();
 

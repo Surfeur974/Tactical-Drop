@@ -7,8 +7,8 @@ public class ItemCollider : MonoBehaviour
     BoxCollider boxCollider;
     RaycastOrigin raycastOrigins;
     float skinWidth = 0.1f;
-    int defaultraycastDistance = 2;
-    int currentRaycastDistance = 2;
+    int defaultraycastDistance = 1;
+    int currentRaycastDistance = 1;
     RaycastHit rightHitInfo, leftHitInfo, upHitInfo, downHitInfo;
     GridManager gridManager;
     Node node;
@@ -99,10 +99,13 @@ public class ItemCollider : MonoBehaviour
 
     public void UpdateConnectedTo()
     {
-        //coordinates = GetComponent<ItemCoordinatesLabeler>().ItemCoordinates;
         coordinates = new Vector2Int(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y));
         node = gridManager.GetNode(coordinates);
-        if(node == null) { return; }
+
+        if (node == null) { return; }
+        if (node.isInHand == true) { return; }
+
+
         UpdateRaycastOrigins();
         TestFourSideCollision();
         node.ClearConnection();

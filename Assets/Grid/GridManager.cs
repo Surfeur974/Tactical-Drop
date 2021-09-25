@@ -191,5 +191,5 @@ public class GridManager : MonoBehaviour
     {
         mainCamera.transform.position = new Vector3(gridSize.x / 2, (gridSize.y) / 2, -13.33f);
     }//Set camera position to middle of the Grid
-
+    //test github
 }

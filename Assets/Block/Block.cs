@@ -14,6 +14,7 @@ public class Block : MonoBehaviour
     private void Start()
     {
         gridManager = FindObjectOfType<GridManager>();
+
         material = GetComponentInChildren<MeshRenderer>().material;
         itemCoordinatesLabeler = GetComponent<ItemCoordinatesLabeler>();
 

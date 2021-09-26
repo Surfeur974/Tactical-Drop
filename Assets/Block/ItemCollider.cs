@@ -39,14 +39,17 @@ public class ItemCollider : MonoBehaviour
 
     void Awake()
     {
-        gridManager = FindObjectOfType<GridManager>();
-        grid = gridManager.Grid;
-        boxCollider = GetComponent<BoxCollider>();
+
 
     }
     void Start()
     {
-        node = gridManager.GetNode(coordinates);
+        boxCollider = GetComponent<BoxCollider>();
+        gridManager = FindObjectOfType<GridManager>();
+        
+        
+        //grid = gridManager.Grid;
+        //node = gridManager.GetNode(coordinates);
 
         if(!transform.GetComponent<Hand>())
         {
@@ -57,10 +60,6 @@ public class ItemCollider : MonoBehaviour
     {
         gridManager.updateConnectionEvent -= UpdateConnectedTo;
 
-    }
-    void Update()
-    {
-        UpdateBoolCollisionState();
     }
 
 
@@ -111,6 +110,8 @@ public class ItemCollider : MonoBehaviour
     public void UpdateConnectedTo()
     {
         coordinates = new Vector2Int(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y));
+
+        grid = gridManager.Grid;
         node = gridManager.GetNode(coordinates);
 
              if (node == null) { return; }

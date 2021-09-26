@@ -9,16 +9,16 @@ public class Block : MonoBehaviour
     GridManager gridManager;
     Color initColor;
     Material material;
-
+    ItemCoordinatesLabeler itemCoordinatesLabeler;
     public Vector2Int Coordinates {get{ return coordinates;}}
     private void Start()
     {
         gridManager = FindObjectOfType<GridManager>();
         material = GetComponentInChildren<MeshRenderer>().material;
-        coordinates = GetComponent<ItemCoordinatesLabeler>().ItemCoordinates;
+        itemCoordinatesLabeler = GetComponent<ItemCoordinatesLabeler>();
 
         initColor = material.color;
-
+        coordinates = itemCoordinatesLabeler.GetCoordinates();
 
         if (gridManager.Grid.ContainsKey(coordinates))
         {
@@ -32,7 +32,7 @@ public class Block : MonoBehaviour
         {
             ChangeBlockColor();
 
-            coordinates = GetComponent<ItemCoordinatesLabeler>().ItemCoordinates;
+            coordinates = itemCoordinatesLabeler.GetCoordinates();
 
             if (gridManager.Grid.ContainsKey(coordinates))
             {
@@ -51,9 +51,5 @@ public class Block : MonoBehaviour
         {
             material.color = initColor;
         }
-    }
-    public Vector2Int GetCoordinates()
-    {
-        return coordinates;
     }
 }

@@ -43,4 +43,11 @@ public class ItemCoordinatesLabeler : MonoBehaviour
         this.transform.name = label.text;
     }
 
+    public Vector2Int GetCoordinates()
+    {
+        return itemCoordinates;
+
+    }
+
+
 }

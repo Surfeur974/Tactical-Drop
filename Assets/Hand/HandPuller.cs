@@ -8,7 +8,7 @@ public class HandPuller : MonoBehaviour
     int handCollisionDistance = 20;
     ItemCollider itemCollider;
     RaycastHit UpHit;
-    Queue<GameObject> blockStoredInHand = new Queue<GameObject>(); 
+    Queue<GameObject> blockStoredInHand = new Queue<GameObject>();
     GridManager gridManager;
     bool isMoving = true;
 
@@ -26,7 +26,7 @@ public class HandPuller : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.DownArrow) && !isMoving)
         {
             UpHit = itemCollider.GetUpHitInfo();
-            if(UpHit.collider == null) { return; } //Si rien n'est Hit return
+            if (UpHit.collider == null) { return; } //Si rien n'est Hit return
 
             GameObject gameObjectHitted = UpHit.transform.gameObject; //Recup gameObject hitted
             Vector2Int nodePosition = Vector2Int.RoundToInt(gameObjectHitted.transform.position);
@@ -62,8 +62,8 @@ public class HandPuller : MonoBehaviour
             }
 
             endPosition += Vector3Int.down * offset;
-            while(blockStoredInHand.Count >0)
-                {
+            while (blockStoredInHand.Count > 0)
+            {
                 GameObject currentBlockToPush = blockStoredInHand.Dequeue();
                 Node ObjectToPushdNode = gridManager.GetNode(currentBlockToPush.GetComponent<Block>().Coordinates);
 
@@ -74,9 +74,7 @@ public class HandPuller : MonoBehaviour
                 currentBlockToPush.transform.parent = gridManager.transform;
                 currentBlockToPush.SetActive(true);
                 endPosition += Vector3Int.down;
-
-
-            }        
+            }
         }
     }
     IEnumerator Move(GameObject objectToMove, Vector3Int startposition, Vector3Int endposition, bool enableAtEndPosition)

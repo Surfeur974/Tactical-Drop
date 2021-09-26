@@ -4,20 +4,20 @@ using UnityEngine;
 
 public class GridManager : MonoBehaviour
 {
-    [SerializeField] Block blockPrefab;
-    [SerializeField] Color[] colors;
-    [SerializeField] Vector2Int gridSize = new Vector2Int(4,4);
     [SerializeField] Camera mainCamera;
+    [SerializeField] float cameraZoom = 7.29f;
 
     Dictionary<Vector2Int, Node> grid = new Dictionary<Vector2Int, Node>();
+    Vector2Int gridSize = new Vector2Int();
 
-    ItemCollider itemCollider;
-    int blankLinesOnBottom = 10;
+    GridSpawner gridspawner;
     int minNumberForVerticalConnection = 3;
     Node currentSearchNode;
     List<Node> linkedNodeOfSameColor = new List<Node>();
     List<Node> alreadyCheckedNodes = new List<Node>();
     Queue<Node> nodeToExplored = new Queue<Node>();
+
+
 
 
     public Dictionary<Vector2Int, Node> Grid { get { return grid; } }
@@ -26,19 +26,24 @@ public class GridManager : MonoBehaviour
     public delegate void UpdateConnectionDelegate();
     public event UpdateConnectionDelegate updateConnectionEvent;
 
-
-
     void Start()
     {
-        gridSize.y += blankLinesOnBottom; //Pour avoir des lignes vides en bas
-        SetCameraToMiddleOfGrid();
-        ClearGrid();
-        CreateGrid();
-        UpdateAllNodeConnection();
-
+        gridspawner = GetComponent<GridSpawner>();
+        ResetGrid();
     }
+
+    private void ResetGrid()
+    {
+        gridspawner.InitGrid();
+        gridSize = gridspawner.GetGridSize();
+        grid = gridspawner.GetGrid();
+        SetCameraToMiddleOfGrid();
+        UpdateAllNodeConnection();
+    }
+
     void Update()
     {
+        SetCameraToMiddleOfGrid();
         PushSpaceToResetGrid();
         PushEnterToTestFotMatched3();
         PushBackSpaceToDematch();
@@ -52,49 +57,45 @@ public class GridManager : MonoBehaviour
         return null;
     }
 
-    void ClearGrid() //Destroy All child of Grid
+    private void PushBackSpaceToDematch() //Update all connection and check for one combo
     {
-        grid.Clear();
-        for (int i = 0; i < transform.childCount; i++)
+        if (Input.GetKeyDown(KeyCode.Backspace))
         {
-            Destroy(transform.GetChild(i).gameObject);
+            DematchAll();
         }
     }
-    void CreateGrid()  //Instantiate block with 3 random color set in inspector, create a node for set (position and color), Add pair coordinate:node in dictionnary
+    public void DematchAll()//TODO a refaire avec des events pour updates les collisiton
     {
         for (int x = 0; x < gridSize.x; x++)
         {
             for (int y = 0; y < gridSize.y; y++)
             {
-
                 Vector2Int coordinates = new Vector2Int(x, y);
-                Color blockColor = colors[Random.Range(0, colors.Length)];
-
-                //Color blockColor = colors[0];
-                //if (x == gridSize.x - 1 || x == gridSize.x - 3 || x == gridSize.x - 5) { blockColor = colors[1]; }
-                //if (y == gridSize.y - 4 || y == gridSize.y - 2 || y == gridSize.y - 6) { blockColor = colors[1]; }
-
-                //Color blockColor = colors[0];
-                //if (x == 0) { blockColor = colors[1]; }
-                //if (y == gridSize.y - 7) { blockColor = colors[2]; }
-
-                //Color blockColor = colors[0];
-                //if (x == 0) { blockColor = colors[1]; }
-                //if (y == gridSize.y - 5 || y == gridSize.y - 4) { blockColor = colors[2]; }
-
-                if (y >= blankLinesOnBottom)
+                if (grid.ContainsKey(coordinates))
                 {
-                    Block block_ = Instantiate(blockPrefab, new Vector3Int(coordinates.x, coordinates.y, 0), Quaternion.identity, transform);
-                    block_.GetComponentInChildren<MeshRenderer>().material.color = blockColor;
+                    grid[coordinates].Init();
                 }
 
-                Node node_ = ScriptableObject.CreateInstance<Node>();
-                node_.Init(coordinates);
-                grid.Add(coordinates, node_);
             }
         }
     }
+    void PushSpaceToResetGrid() //Press Space to reset Grid et instanciate new blocks and UpdateAllNodeConnection
+    {
 
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            ResetGrid();
+            //UpdateAllNodeConnection();
+        }
+    }
+    private void PushEnterToTestFotMatched3() //Update all connection and check for one combo
+    {
+        if (Input.GetKeyDown(KeyCode.Return))
+        {
+            UpdateAllNodeConnection();
+            HandleFirstMatched();
+        }
+    }
 
     private List<Node> GetAllVerticalConnectionNodesWithSameColor(Node node) //return for a node, all his vertical connections of same color
     {
@@ -227,31 +228,7 @@ public class GridManager : MonoBehaviour
             node.isMatched = true;
         }
     }//Set all isMatched bool at true for the list
-    void PushSpaceToResetGrid() //Press Space to reset Grid et instanciate new blocks and UpdateAllNodeConnection
-    {
 
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            ClearGrid();
-            CreateGrid();
-            UpdateAllNodeConnection();
-        }
-    }
-    private void PushEnterToTestFotMatched3() //Update all connection and check for one combo
-    {
-        if (Input.GetKeyDown(KeyCode.Return))
-        {
-            UpdateAllNodeConnection();
-            HandleFirstMatched();
-        }
-    }
-    private void PushBackSpaceToDematch() //Update all connection and check for one combo
-    {
-        if (Input.GetKeyDown(KeyCode.Backspace))
-        {
-            DematchAll();
-        }
-    }
 
     public void UpdateAllNodeConnection() //Call UpdateConnectedTo() on all itemCollider subscribte to the event
     {
@@ -264,24 +241,9 @@ public class GridManager : MonoBehaviour
         //    child.GetComponentInChildren<ItemCollider>().UpdateConnectedTo();
         //}
     }
-    public void DematchAll()//TODO a refaire avec des events pour updates les collisiton
-    {
-        for (int x = 0; x < gridSize.x; x++)
-        {
-            for (int y = 0; y < gridSize.y; y++)
-            {
-                Vector2Int coordinates = new Vector2Int(x, y);
-                if (grid.ContainsKey(coordinates))
-                {
-                    grid[coordinates].Init();
-                }
-
-            }
-        }
-    }
     private void SetCameraToMiddleOfGrid()
     {
         mainCamera.transform.position = new Vector3(gridSize.x / 2, (gridSize.y) / 2, -10);
-        mainCamera.orthographicSize = 8.6f;
+        mainCamera.orthographicSize = cameraZoom;
     }//Set camera position to middle of the Grid
 }

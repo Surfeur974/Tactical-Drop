@@ -4,11 +4,11 @@ using UnityEngine;
 public class HandMover : MonoBehaviour
 {
     [SerializeField] bool enableLoopMovement = false;
-    float horizontalInput;
-    int horizontalPosition;
+
+
     bool isMoving;
     GridManager gridManager;
-    Vector2Int gridSize;
+    [SerializeField] Vector2Int gridSize;
     Transform spriteScale;
 
     void Start()
@@ -27,7 +27,10 @@ public class HandMover : MonoBehaviour
     }
     private void MoveHand() //Move hand by block size steps
     {
-
+        if(gridSize == Vector2Int.zero)
+        {
+            gridSize = gridManager.GridSize;
+        }
         if (Input.GetKeyDown(KeyCode.RightArrow) && !isMoving)
         {
 

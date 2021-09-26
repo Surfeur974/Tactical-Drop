@@ -15,10 +15,11 @@ public class ItemCollider : MonoBehaviour
     BoolCollision boolCollision;
     Vector2Int coordinates;
     Dictionary<Vector2Int, Node> grid = new Dictionary<Vector2Int, Node>();
-    public int DefaultraycastDistance {  //GETTER SETTER
+    public int DefaultraycastDistance
+    {  //GETTER SETTER
         get { return defaultraycastDistance; }
         set { defaultraycastDistance = value; }
-        }
+    }
 
     struct RaycastOrigin
     {
@@ -46,14 +47,24 @@ public class ItemCollider : MonoBehaviour
     void Start()
     {
         node = gridManager.GetNode(coordinates);
+
+        if(!transform.GetComponent<Hand>())
+        {
+        gridManager.updateConnectionEvent += UpdateConnectedTo;
+        }
+    }
+    private void OnDestroy()
+    {
+        gridManager.updateConnectionEvent -= UpdateConnectedTo;
+
     }
     void Update()
     {
-        TestFourSideCollision();
+        UpdateBoolCollisionState();
     }
 
 
-    private void TestFourSideCollision()
+    private void UpdateBoolCollisionState()
     {
         boolCollision = new BoolCollision(false);
         currentRaycastDistance = defaultraycastDistance;
@@ -102,12 +113,16 @@ public class ItemCollider : MonoBehaviour
         coordinates = new Vector2Int(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y));
         node = gridManager.GetNode(coordinates);
 
-        if (node == null) { return; }
-        if (node.isInHand == true) { return; }
+             if (node == null) { return; }
+        if (node.isInHand == true)
+        {
+            node.ClearConnection();
+            return;
+        }
 
 
         UpdateRaycastOrigins();
-        TestFourSideCollision();
+        UpdateBoolCollisionState();
         node.ClearConnection();
 
 
@@ -156,12 +171,12 @@ public class ItemCollider : MonoBehaviour
     public RaycastHit GetUpHitInfo()
     {
         UpdateRaycastOrigins();
-        TestFourSideCollision();
+        UpdateBoolCollisionState();
         return upHitInfo;
     }
     public void DrawRaycast()
     {
         UpdateRaycastOrigins();
-        TestFourSideCollision();
+        UpdateBoolCollisionState();
     }
 }

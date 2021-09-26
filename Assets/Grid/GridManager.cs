@@ -6,10 +6,12 @@ public class GridManager : MonoBehaviour
 {
     [SerializeField] Block blockPrefab;
     [SerializeField] Color[] colors;
-    Dictionary<Vector2Int, Node> grid = new Dictionary<Vector2Int, Node>();
-    Vector2Int gridSize = new Vector2Int(8, 8);
-    ItemCollider itemCollider;
+    [SerializeField] Vector2Int gridSize = new Vector2Int(4,4);
     [SerializeField] Camera mainCamera;
+
+    Dictionary<Vector2Int, Node> grid = new Dictionary<Vector2Int, Node>();
+
+    ItemCollider itemCollider;
     int blankLinesOnBottom = 10;
     int minNumberForVerticalConnection = 3;
     Node currentSearchNode;
@@ -20,6 +22,11 @@ public class GridManager : MonoBehaviour
 
     public Dictionary<Vector2Int, Node> Grid { get { return grid; } }
     public Vector2Int GridSize { get { return gridSize; } }
+
+    public delegate void UpdateConnectionDelegate();
+    public event UpdateConnectionDelegate updateConnectionEvent;
+
+
 
     void Start()
     {
@@ -70,6 +77,10 @@ public class GridManager : MonoBehaviour
                 //Color blockColor = colors[0];
                 //if (x == 0) { blockColor = colors[1]; }
                 //if (y == gridSize.y - 7) { blockColor = colors[2]; }
+
+                //Color blockColor = colors[0];
+                //if (x == 0) { blockColor = colors[1]; }
+                //if (y == gridSize.y - 5 || y == gridSize.y - 4) { blockColor = colors[2]; }
 
                 if (y >= blankLinesOnBottom)
                 {
@@ -140,8 +151,6 @@ public class GridManager : MonoBehaviour
         }
         return true;
     }
-
-
     private List<Node> GetAllHorizontalConnectionNodesWithSameColor(Node node) //return for a node, all his Horizontal connections of same color
     {
         alreadyCheckedNodes = new List<Node>();
@@ -158,7 +167,7 @@ public class GridManager : MonoBehaviour
         return alreadyCheckedNodes;
     }
 
-    void HandleFirstMatched() //Check throught all block in Grid and handle first match connection
+    public void  HandleFirstMatched() //Check throught all block in Grid and handle first match connection
     {
         for (int x = 0; x < gridSize.x; x++)
         {
@@ -177,7 +186,7 @@ public class GridManager : MonoBehaviour
                         nodeList.AddRange(GetAllConnectionNodesWithSameColor(node)); 
 
                         MatchedNodeList(nodeList);
-                        //return;  //Remove return to handle all matched at once
+                        return;  //Remove return to handle all matched at once
                     }
                 }
             }
@@ -244,12 +253,16 @@ public class GridManager : MonoBehaviour
         }
     }
 
-    public void UpdateAllNodeConnection()//TODO a refaire avec des events pour updates les collisiton
+    public void UpdateAllNodeConnection() //Call UpdateConnectedTo() on all itemCollider subscribte to the event
     {
-        foreach (Transform child in transform)
+        if(updateConnectionEvent != null)
         {
-            child.GetComponentInChildren<ItemCollider>().UpdateConnectedTo();
+            updateConnectionEvent();
         }
+        //foreach (Transform child in transform)
+        //{
+        //    child.GetComponentInChildren<ItemCollider>().UpdateConnectedTo();
+        //}
     }
     public void DematchAll()//TODO a refaire avec des events pour updates les collisiton
     {
@@ -268,7 +281,7 @@ public class GridManager : MonoBehaviour
     }
     private void SetCameraToMiddleOfGrid()
     {
-        mainCamera.transform.position = new Vector3(gridSize.x / 2, (gridSize.y) / 2, -13.33f);
+        mainCamera.transform.position = new Vector3(gridSize.x / 2, (gridSize.y) / 2, -10);
+        mainCamera.orthographicSize = 8.6f;
     }//Set camera position to middle of the Grid
-    //test github
 }

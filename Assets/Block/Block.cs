@@ -2,23 +2,19 @@ using UnityEngine;
 
 public class Block : MonoBehaviour
 {
-    //public Vector2Int coordinates;
-    Material material;
-    //[SerializeField] public List<Block> connectedToVertical;
-    //[SerializeField] public List<Block> connectedToHorizontal;
-    [SerializeField] public Node node;
-    GridManager gridManager;
+    [SerializeField] Node node;
     [SerializeField] Vector2Int coordinates;
     [SerializeField] Color matchedColor;
+
+    GridManager gridManager;
     Color initColor;
+    Material material;
 
-
-
-
+    public Vector2Int Coordinates {get{ return coordinates;}}
     private void Start()
     {
-        material = GetComponentInChildren<MeshRenderer>().material;
         gridManager = FindObjectOfType<GridManager>();
+        material = GetComponentInChildren<MeshRenderer>().material;
         coordinates = GetComponent<ItemCoordinatesLabeler>().ItemCoordinates;
 
         initColor = material.color;
@@ -32,7 +28,7 @@ public class Block : MonoBehaviour
 
     private void Update()
     {
-        if (!node.isInHand)
+        if (node.isInHand == false)
         {
             ChangeBlockColor();
 
@@ -49,17 +45,15 @@ public class Block : MonoBehaviour
     {
         if (node.isMatched == true)
         {
-            material.color = Color.black;
+            material.color = matchedColor;
         }
         else
         {
             material.color = initColor;
         }
     }
-    public void HandleInHand(bool isInHand)
+    public Vector2Int GetCoordinates()
     {
-        node.isInHand = isInHand;
+        return coordinates;
     }
-
-
 }

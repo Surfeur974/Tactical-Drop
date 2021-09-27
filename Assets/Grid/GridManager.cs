@@ -7,8 +7,11 @@ public class GridManager : MonoBehaviour
     [SerializeField] Camera mainCamera;
     [SerializeField] float cameraZoom = 7.29f;
 
+
     Dictionary<Vector2Int, Node> grid = new Dictionary<Vector2Int, Node>();
     Vector2Int gridSize = new Vector2Int();
+    Block[] blockSpawned;
+
 
     GridSpawner gridspawner;
     ConnectionHandler connectionHandler;
@@ -23,7 +26,7 @@ public class GridManager : MonoBehaviour
     {
         gridspawner = GetComponent<GridSpawner>();
         connectionHandler = GetComponent<ConnectionHandler>();
-        ResetGrid();
+        //ResetGrid();
     }
 
     private void ResetGrid()
@@ -31,8 +34,29 @@ public class GridManager : MonoBehaviour
         gridspawner.InitGrid();
         gridSize = gridspawner.GetGridSize();
         grid = gridspawner.GetGrid();
-        SetCameraToMiddleOfGrid();
+        blockSpawned = gridspawner.GetBlockSpawned();
         UpdateAllNodeConnection();
+        int i = 0;
+        bool connectionpresent = true;
+
+        while (connectionpresent && i < 100) //Boucle pour generer une grille sans match
+        {
+            gridspawner.InitGrid();
+            gridSize = gridspawner.GetGridSize();
+            grid = gridspawner.GetGrid();
+            blockSpawned = gridspawner.GetBlockSpawned();
+
+            //gridspawner.RandomizeAllBlockColor();
+
+
+            UpdateAllNodeConnection();
+            connectionpresent = connectionHandler.IsThereAConnection(grid, gridSize); //True if match is present
+            i++;
+        }
+        Debug.Log(connectionpresent + "After " + i + " itération");
+
+        SetCameraToMiddleOfGrid();
+
     }
 
     void Update()
@@ -41,6 +65,7 @@ public class GridManager : MonoBehaviour
         PushSpaceToResetGrid();
         PushEnterToTestFotMatched3(grid, gridSize);
         PushBackSpaceToDematch(grid, gridSize);
+
     }
     public Node GetNode(Vector2Int coordinates)
     {

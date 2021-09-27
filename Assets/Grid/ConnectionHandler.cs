@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -43,6 +42,33 @@ public class ConnectionHandler : MonoBehaviour
             }
         }
     }
+
+    public bool IsThereAConnection(Dictionary<Vector2Int, Node> grid, Vector2Int gridSize)
+    {
+        for (int x = 0; x < gridSize.x; x += 1)
+        {
+            for (int y = 1 + (x % 2); y < gridSize.y - 1; y += 2)
+            {
+                Vector2Int coordinates = new Vector2Int(x, y);
+
+                //grid[coordinates].isMatched = true;
+
+                if (grid.ContainsKey(coordinates) && !grid[coordinates].isMatched) //Check tous les node sauf ceux déja matched
+                {
+                    Node node = grid[coordinates];
+                    List<Node> nodeList = new List<Node> { };
+
+                    nodeList.AddRange(GetAllVerticalConnectionNodesWithSameColor(node)); //Met dans une liste un node avec ses connection vertical de la meme couleur
+                    if (IsListMinNumber(nodeList)) //Si Il a 2+ connection vertical on clear la list et on prend toutes ses connection
+                    {
+                        return true;  //Remove return to handle all matched at once
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     private List<Node> GetAllVerticalConnectionNodesWithSameColor(Node node) //return for a node, all his vertical connections of same color
     {
         alreadyCheckedNodes = new List<Node>();
@@ -91,7 +117,8 @@ public class ConnectionHandler : MonoBehaviour
         {
             currentSearchNode = nodeToExplored.Dequeue();
 
-            List<Node> nodesToChecked = currentSearchNode.connectedToVertical;
+            List<Node> nodesToChecked = new List<Node>();
+            nodesToChecked.AddRange(currentSearchNode.connectedToVertical);
             nodesToChecked.AddRange(currentSearchNode.connectedToHorizontal);
 
             isRunning = CheckConnectedNode(nodesToChecked);
@@ -148,7 +175,6 @@ public class ConnectionHandler : MonoBehaviour
             node.isMatched = true;
         }
     }//Set all isMatched bool at true for the list
-
 
 
     public void DematchAll(Dictionary<Vector2Int, Node> grid, Vector2Int gridSize)//TODO a refaire avec des events pour updates les collisiton

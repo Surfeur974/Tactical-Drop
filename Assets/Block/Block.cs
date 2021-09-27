@@ -7,10 +7,13 @@ public class Block : MonoBehaviour
     [SerializeField] Color matchedColor;
 
     GridManager gridManager;
+
     Color initColor;
     Material material;
     ItemCoordinatesLabeler itemCoordinatesLabeler;
     public Vector2Int Coordinates {get{ return coordinates;}}
+    
+    
     private void Start()
     {
         gridManager = FindObjectOfType<GridManager>();
@@ -53,4 +56,5 @@ public class Block : MonoBehaviour
             material.color = initColor;
         }
     }
+
 }

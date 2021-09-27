@@ -37,11 +37,6 @@ public class ItemCollider : MonoBehaviour
         }
     }
 
-    void Awake()
-    {
-
-
-    }
     void Start()
     {
         boxCollider = GetComponent<BoxCollider>();
@@ -58,6 +53,10 @@ public class ItemCollider : MonoBehaviour
     }
     private void OnDestroy()
     {
+        if(!gridManager)
+        {
+            return;
+        }
         gridManager.updateConnectionEvent -= UpdateConnectedTo;
 
     }

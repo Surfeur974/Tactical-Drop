@@ -76,6 +76,7 @@ public class HandPuller : MonoBehaviour
                 endPosition += Vector3Int.down;
             }
         }
+
     }
     IEnumerator Move(GameObject objectToMove, Vector3Int startposition, Vector3Int endposition, bool enableAtEndPosition)
     {
@@ -99,7 +100,10 @@ public class HandPuller : MonoBehaviour
         objectToMove.gameObject.SetActive(enableAtEndPosition);
         objectToMove.GetComponentInChildren<BlockSprite>().transform.localScale = new Vector3Int(1, 1, 1);
 
-        gridManager.UpdateAllNodeConnection();
-        //gridManager.HandleFirstMatched();
+        if(enableAtEndPosition)
+        {
+            gridManager.UpdateAllNodeConnection();
+            gridManager.TestFor3Match();
+        }
     }
 }

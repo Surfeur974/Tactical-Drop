@@ -34,18 +34,22 @@ public class Block : MonoBehaviour
     {
         if (node.isInHand == false)
         {
-            ChangeBlockColor();
-
-            coordinates = itemCoordinatesLabeler.GetCoordinates();
-
-            if (gridManager.Grid.ContainsKey(coordinates))
-            {
-                node = gridManager.GetNode(coordinates);
-                node.updateNodeColor(material.color);
-            }
+            UpdateSelfNode();
+            ChangeBlockState();
         }
     }
-    private void ChangeBlockColor()
+
+    private void UpdateSelfNode()
+    {
+        coordinates = itemCoordinatesLabeler.GetCoordinates();
+        if (gridManager.Grid.ContainsKey(coordinates))
+        {
+            node = gridManager.GetNode(coordinates);
+            node.updateNodeColor(material.color);
+        }
+    }
+
+    private void ChangeBlockState()
     {
         if (node.isMatched == true)
         {

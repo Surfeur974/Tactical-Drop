@@ -17,7 +17,7 @@ public class ConnectionHandler : MonoBehaviour
         //grid = gridManager.Grid;
         //gridSize = gridManager.GridSize;
     }
-    public void HandleFirstMatched(Dictionary<Vector2Int, Node> grid, Vector2Int gridSize) //Check throught all block in Grid and handle first match connection
+    public List<Node> HandleFirstMatched(Dictionary<Vector2Int, Node> grid, Vector2Int gridSize) //Check throught all block in Grid and handle first match connection
     {//IF bug maybe use REF //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         for (int x = 0; x < gridSize.x; x++)
         {
@@ -36,11 +36,13 @@ public class ConnectionHandler : MonoBehaviour
                         nodeList.AddRange(GetAllConnectionNodesWithSameColor(node));
 
                         MatchedNodeList(nodeList);
-                        return;  //Remove return to handle all matched at once
+
+                        return nodeList;  //Remove return to handle all matched at once
                     }
                 }
             }
         }
+        return null;
     }
 
     public bool IsThereAConnection(Dictionary<Vector2Int, Node> grid, Vector2Int gridSize)

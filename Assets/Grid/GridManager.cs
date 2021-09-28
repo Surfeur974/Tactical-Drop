@@ -112,4 +112,11 @@ public class GridManager : MonoBehaviour
         mainCamera.transform.position = new Vector3(gridSize.x / 2, (gridSize.y) / 2, -10);
         mainCamera.orthographicSize = cameraZoom;
     }//Set camera position to middle of the Grid
+
+    public void TestFor3Match() //Update all connection and check for one combo
+    {
+            
+    }
+
+
 }

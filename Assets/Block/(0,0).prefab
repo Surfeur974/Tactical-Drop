@@ -48,6 +48,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63e8b3a390e92dc428a16b15733162bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  labelColor: {r: 0, g: 0, b: 0, a: 0}
 --- !u!114 &3838269501078847092
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -60,6 +61,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb01c63f742617a41b30104ed24db9cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  defaultraycastDistance: 1
 --- !u!114 &3146110860716408748
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -74,6 +76,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   node: {fileID: 0}
   coordinates: {x: 0, y: 0}
+  matchedColor: {r: 0, g: 0, b: 0, a: 0}
 --- !u!65 &8353078707210649926
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -194,8 +197,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -212,8 +215,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 2.66
-  m_fontSizeBase: 2.66
+  m_fontSize: 2.72
+  m_fontSizeBase: 2.72
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18

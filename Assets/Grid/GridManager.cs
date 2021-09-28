@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -36,34 +37,32 @@ public class GridManager : MonoBehaviour
         grid = gridspawner.GetGrid();
         blockSpawned = gridspawner.GetBlockSpawned();
         UpdateAllNodeConnection();
-        int i = 0;
-        bool connectionpresent = true;
 
-        while (connectionpresent && i < 100) //Boucle pour generer une grille sans match
-        {
-            gridspawner.InitGrid();
-            gridSize = gridspawner.GetGridSize();
-            grid = gridspawner.GetGrid();
-            blockSpawned = gridspawner.GetBlockSpawned();
+        StartCoroutine(NoMatchGrid());
 
-            //gridspawner.RandomizeAllBlockColor();
-
-
-            UpdateAllNodeConnection();
-            connectionpresent = connectionHandler.IsThereAConnection(grid, gridSize); //True if match is present
-            i++;
-        }
-        Debug.Log(connectionpresent + "After " + i + " itération");
 
         SetCameraToMiddleOfGrid();
 
     }
+    IEnumerator NoMatchGrid() //Coroutine used 
+    {
+        int i = 0;
+        while (connectionHandler.IsThereAConnection(grid, gridSize))
+        {
+            gridspawner.RandomizeAllBlockColor(blockSpawned);
+            yield return null;
 
+            UpdateAllNodeConnection();
+            i++;
+        }
+        Debug.Log("After " + i + " itération");
+
+    }
     void Update()
     {
         SetCameraToMiddleOfGrid();
         PushSpaceToResetGrid();
-        PushEnterToTestFotMatched3(grid, gridSize);
+        PushEnterToTest(grid, gridSize);
         PushBackSpaceToDematch(grid, gridSize);
 
 
@@ -97,11 +96,12 @@ public class GridManager : MonoBehaviour
             //UpdateAllNodeConnection();
         }
     }
-    private void PushEnterToTestFotMatched3(Dictionary<Vector2Int, Node> grid, Vector2Int gridSize) //Update all connection and check for one combo
+    private void PushEnterToTest(Dictionary<Vector2Int, Node> grid, Vector2Int gridSize) //Update all connection and check for one combo
     {
         if (Input.GetKeyDown(KeyCode.Return))
         {
             TestFor3Match();
+            //StartCoroutine(NoMatchGrid());
         }
     }
     public void UpdateAllNodeConnection() //Call UpdateConnectedTo() on all itemCollider subscribte to the event
@@ -118,7 +118,7 @@ public class GridManager : MonoBehaviour
         mainCamera.orthographicSize = cameraZoom;
     }//Set camera position to middle of the Grid
 
-    public void TestFor3Match() //Update all connection and check for one combo
+    public void TestFor3Match() //TODO ADD HERE gestion de bouger bloc if void au dessu
     {
         List<Node> matchedNodeList = new List<Node> { };
         UpdateAllNodeConnection();
@@ -127,6 +127,8 @@ public class GridManager : MonoBehaviour
         {
             connectionHandler.MatchedNodeList(matchedNodeList);
         }
+
+
 
     }
 

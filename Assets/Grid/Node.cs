@@ -10,11 +10,9 @@ public class Node : ScriptableObject
     public List<Node> connectedToVertical = new List<Node>();
     public List<Node> connectedToHorizontal = new List<Node>();
     public bool isMatched;
-    public bool isInHand;
     public bool isCHecked;
 
     public bool IsMatched { get { return isMatched; } }
-    public bool IsInHand { get { return isInHand; } }
     public bool IsCHecked { get { return isCHecked; } }
 
 
@@ -24,7 +22,7 @@ public class Node : ScriptableObject
         UpdateNameObject();
         ClearConnection();
         isMatched = false;
-        isInHand = false;
+        //isInHand = false;
     }
     public void Init(Vector2Int coordinates, Color colorToInit)
     {
@@ -33,7 +31,7 @@ public class Node : ScriptableObject
         UpdateNameObject();
         ClearConnection();
         isMatched = false;
-        isInHand = false;
+        //isInHand = false;
     }
     public void Init()
     {

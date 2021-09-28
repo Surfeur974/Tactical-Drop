@@ -64,8 +64,10 @@ MonoBehaviour:
   - {r: 0.02352941, g: 0.09282679, b: 1, a: 0}
   - {r: 0.8301887, g: 0.08928439, b: 0.08928439, a: 0}
   - {r: 0.092701994, g: 0.7924528, b: 0.11207054, a: 0}
-  gridSize: {x: 4, y: 14}
+  - {r: 1, g: 0.76005167, b: 0, a: 0}
+  gridSize: {x: 8, y: 18}
   blankLinesOnBottom: 10
+  blockSpawned: []
 --- !u!114 &8988566358910059666
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -79,4 +81,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   minNumberForVerticalConnection: 3
-  gridspawner: {fileID: 7600123988129839331}

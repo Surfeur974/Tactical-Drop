@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -79,7 +80,7 @@ public class ConnectionHandler : MonoBehaviour
         while (nodeToExplored.Count > 0 && isRunning)
         {
             currentSearchNode = nodeToExplored.Dequeue();
-            isRunning = CheckConnectedNode(currentSearchNode.connectedToVertical);
+            isRunning = CheckConnectedNode(currentSearchNode.connectedToVertical);//Check a list of node, Add it to queue "nodeToExplored" if same color, and to alreadyCheckedNodes List<Node>
         }
         return alreadyCheckedNodes;
     }

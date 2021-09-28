@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -76,16 +77,15 @@ public class GridSpawner : MonoBehaviour
         }
     }
 
-    public void RandomizeAllBlockColor()  //TODO DONT WORK
+    public void RandomizeAllBlockColor(Block[] blocksToRandomize)  //TODO DONT WORK
     {
-        for (int i = 0; i < blockSpawned.Length; i++)
+        for (int i = 0; i < blocksToRandomize.Length; i++)
         {
             Color blockColor = colors[Random.Range(0, colors.Length)];
 
-            if (blockSpawned[i] != null)
+            if (blocksToRandomize[i] != null)
             {
-                blockSpawned[i].GetComponentInChildren<MeshRenderer>().material.color = blockColor;
-
+                blocksToRandomize[i].GetComponentInChildren<MeshRenderer>().material.color = blockColor;
             }
         }
     }

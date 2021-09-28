@@ -13,7 +13,6 @@ public class HandPuller : MonoBehaviour
 
     void Start()
     {
-        //gridManager = FindObjectOfType<GridManager>();
         itemCollider = GetComponent<ItemCollider>();
         isMoving = false;
     }
@@ -34,7 +33,7 @@ public class HandPuller : MonoBehaviour
             Vector3Int startPosition = new Vector3Int(nodePosition.x, nodePosition.y, 0);
             Vector3Int endPosition = Vector3Int.RoundToInt(this.transform.position);
 
-            ObjectHittedNode.isInHand = true; //Si inHand == true, on clear connections
+            gameObjectHitted.GetComponent<Block>().isInHand = true; //Si inHand == true, on clear connections
             ObjectHittedNode.Init(); //Clear connection, isMatched==false, update node name
 
             StartCoroutine(Move(gameObjectHitted, startPosition, endPosition, false));
@@ -66,7 +65,7 @@ public class HandPuller : MonoBehaviour
                 Node ObjectToPushdNode = gridManager.GetNode(currentBlockToPush.GetComponent<Block>().Coordinates);
 
 
-                ObjectToPushdNode.isInHand = false;//Si inHand == false, on update ses connection
+                currentBlockToPush.GetComponent<Block>().isInHand = false; //Si inHand == true, on clear connections
                 StartCoroutine(Move(currentBlockToPush, startPosition, endPosition, true));
 
                 currentBlockToPush.transform.parent = gridManager.transform;
@@ -108,4 +107,6 @@ public class HandPuller : MonoBehaviour
             gridManager.TestFor3Match();
         }
     }
+
+
 }

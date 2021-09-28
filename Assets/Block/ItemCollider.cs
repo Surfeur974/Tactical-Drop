@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,7 +14,7 @@ public class ItemCollider : MonoBehaviour
     GridManager gridManager;
     Block[] blockSpawned;
     Block block;
-
+    Hand hand;
 
     Node node;
     BoolCollision boolCollision;
@@ -47,13 +48,13 @@ public class ItemCollider : MonoBehaviour
         gridManager = FindObjectOfType<GridManager>();
         blockSpawned = gridManager.GetBlockSpawned();
         block = GetComponent<Block>();
-
+        hand = GetComponent<Hand>();
         //grid = gridManager.Grid;
         //node = gridManager.GetNode(coordinates);
 
         if (!transform.GetComponent<Hand>())
         {
-            gridManager.updateConnectionEvent += UpdateConnectedTo;
+            gridManager.updateConnectionEvent += UpdateBlock;
         }
     }
     private void OnDisable()
@@ -62,10 +63,18 @@ public class ItemCollider : MonoBehaviour
         {
             return;
         }
-        gridManager.updateConnectionEvent -= UpdateConnectedTo;
+        gridManager.updateConnectionEvent -= UpdateBlock;
 
     }
-
+    public void UpdateBlock()
+    {
+        StartCoroutine(MoveBlock());
+    }
+    IEnumerator MoveBlock() //TODO Work pour monter les bloc dans les vide mais pasa tout le temps..
+    {
+        yield return StartCoroutine(UpdateConnectedTo()); //On attend la fin de cette coroutine
+        TopHitRaycast(10); //if void au dessus bouge bloc jusqu'a pas vide
+    }
 
     public void UpdateBoolCollisionState()
     {
@@ -111,20 +120,18 @@ public class ItemCollider : MonoBehaviour
     }
 
 
-    public void UpdateConnectedTo()
+    IEnumerator UpdateConnectedTo()
     {
-          coordinates = new Vector2Int(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y));
-
+        coordinates = new Vector2Int(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y));
         grid = gridManager.Grid;
         node = gridManager.GetNode(coordinates);
 
-        if (node == null) { return; }
-        if (node.isInHand == true) { node.ClearConnection(); return; }
+        if (node == null) { yield return null; }
+        //if (node.isInHand == true) { node.ClearConnection(); return; }
 
         UpdateRaycastOrigins();
         UpdateBoolCollisionState();
         node.ClearConnection();
-        Debug.Log("node  named " + node.name+ "Has Updated his connection");
 
 
         if (boolCollision.isUpHit)
@@ -167,6 +174,8 @@ public class ItemCollider : MonoBehaviour
                 }
             }
         }
+        yield return null;
+
     }
 
     public RaycastHit GetUpHitInfo()
@@ -180,4 +189,61 @@ public class ItemCollider : MonoBehaviour
         UpdateRaycastOrigins();
         UpdateBoolCollisionState();
     }
+    private void Update()
+    {
+        //DrawRaycast();
+    }
+    public RaycastHit TopHitRaycast(int raylenght) //Used for detecting if bloc has something up him
+    {
+        RaycastHit topHit;
+
+        UpdateRaycastOrigins();
+        raycastOrigins.up.y -= .1f;
+
+        Physics.Raycast(raycastOrigins.up, Vector2.up, out topHit, raylenght);
+        Debug.DrawRay(raycastOrigins.up, Vector2.up * topHit.distance, Color.red);
+
+        if ((topHit.distance > 1f || topHit.transform == null) && hand == null && block.Coordinates.y < gridManager.GridSize.y-1)
+        {
+            float maxYPosition = gridManager.GridSize.y;
+            Vector3Int startPosition = Vector3Int.RoundToInt(transform.position);
+            Vector3Int endPosition = new Vector3Int(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(maxYPosition), 0);
+
+            if (topHit.transform != null)
+            {
+                endPosition = Vector3Int.RoundToInt(topHit.transform.position);
+            }
+
+            endPosition += Vector3Int.down;
+
+            StartCoroutine(MoveUpBlockIfVoid(block.gameObject, startPosition, endPosition));
+        }
+        return topHit;
+    }
+
+    IEnumerator MoveUpBlockIfVoid(GameObject objectToMove, Vector3Int startposition, Vector3Int endposition)
+    {//Disabling the BoxCOllider when in movement, solve an issue where the collision were updated bizzarement
+        float t = 0;
+        float timeToTravel = 0.1f;
+
+        //objectToMove.GetComponent<BoxCollider>().enabled = false;
+        while (t < 1)
+        {
+            t += timeToTravel;
+            objectToMove.GetComponentInChildren<BlockSprite>().transform.localScale = new Vector3(.8f, 1.2f, 1);
+            objectToMove.transform.position = Vector3.Lerp(startposition, endposition, t);
+
+            //Debug.Log(t);
+            yield return null;
+        }
+        UpdateBoolCollisionState();
+
+        yield return null;
+        //objectToMove.GetComponent<BoxCollider>().enabled = true;
+        objectToMove.GetComponentInChildren<BlockSprite>().transform.localScale = new Vector3Int(1, 1, 1);
+        gridManager.TestFor3Match();
+
+    }
+
+
 }

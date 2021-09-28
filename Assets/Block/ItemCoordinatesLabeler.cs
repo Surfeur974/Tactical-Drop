@@ -8,6 +8,7 @@ using TMPro;
 [ExecuteAlways]
 public class ItemCoordinatesLabeler : MonoBehaviour
 {
+    [SerializeField] Color labelColor;
     Vector2Int itemCoordinates;
     TextMeshPro label;
     public Vector2Int ItemCoordinates { get { return itemCoordinates; } }
@@ -37,6 +38,7 @@ public class ItemCoordinatesLabeler : MonoBehaviour
         itemCoordinates.x = Mathf.RoundToInt(transform.position.x);
         itemCoordinates.y = Mathf.RoundToInt(transform.position.y);
         label.text = "(" + itemCoordinates.x + "," + itemCoordinates.y + ")";
+        //label.color = labelColor;
     }
     private void UpdateNameObject()
     {

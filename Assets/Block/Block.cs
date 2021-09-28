@@ -5,15 +5,16 @@ public class Block : MonoBehaviour
     [SerializeField] Node node;
     [SerializeField] Vector2Int coordinates;
     [SerializeField] Color matchedColor;
-
+    public bool isInHand;
     GridManager gridManager;
 
     Color initColor;
     Material material;
     ItemCoordinatesLabeler itemCoordinatesLabeler;
-    public Vector2Int Coordinates {get{ return coordinates;}}
-    
-    
+    public Vector2Int Coordinates { get { return coordinates; } }
+    public bool IsInHand { get { return isInHand; } }
+
+
     private void Start()
     {
         gridManager = FindObjectOfType<GridManager>();
@@ -32,7 +33,7 @@ public class Block : MonoBehaviour
 
     private void Update()
     {
-        if (node.isInHand == false)
+        if (IsInHand == false)
         {
             UpdateSelfNode();
             ChangeBlockState();
@@ -53,12 +54,7 @@ public class Block : MonoBehaviour
     {
         if (node.isMatched == true)
         {
-            //material.color = matchedColor;
             HandleMatched();
-        }
-        else
-        {
-            material.color = initColor;
         }
     }
 
@@ -67,4 +63,10 @@ public class Block : MonoBehaviour
         node.Init();
         this.transform.gameObject.SetActive(false);
     }
+
+    public Node GetCurrentNode()
+    {
+        return node;
+    }
+
 }

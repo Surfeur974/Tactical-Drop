@@ -76,6 +76,10 @@ public class GridManager : MonoBehaviour
         }
         return null;
     }
+    public Block[] GetBlockSpawned()
+    {
+        return blockSpawned;
+    }
 
     private void PushBackSpaceToDematch(Dictionary<Vector2Int, Node> grid, Vector2Int gridSize) //Update all connection and check for one combo
     {
@@ -107,6 +111,7 @@ public class GridManager : MonoBehaviour
             updateConnectionEvent();
         }
     }
+
     private void SetCameraToMiddleOfGrid()
     {
         mainCamera.transform.position = new Vector3(gridSize.x / 2, (gridSize.y) / 2, -10);

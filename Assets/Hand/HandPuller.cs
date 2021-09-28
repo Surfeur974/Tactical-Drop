@@ -5,18 +5,16 @@ using UnityEngine;
 
 public class HandPuller : MonoBehaviour
 {
-    int handCollisionDistance = 20;
     ItemCollider itemCollider;
     RaycastHit UpHit;
     Queue<GameObject> blockStoredInHand = new Queue<GameObject>();
-    GridManager gridManager;
+   [SerializeField ]GridManager gridManager;
     bool isMoving = true;
 
     void Start()
     {
-        gridManager = FindObjectOfType<GridManager>();
+        //gridManager = FindObjectOfType<GridManager>();
         itemCollider = GetComponent<ItemCollider>();
-        itemCollider.DefaultraycastDistance = handCollisionDistance; //Set Raystracing distance for hand to be longer
         isMoving = false;
     }
 
@@ -79,12 +77,13 @@ public class HandPuller : MonoBehaviour
 
     }
     IEnumerator Move(GameObject objectToMove, Vector3Int startposition, Vector3Int endposition, bool enableAtEndPosition)
-    {
+    {//Disabling the BoxCOllider when in movement, solve an issue where the collision were updated bizzarement
         //Debug.Log(endposition);
         float t = 0;
         float timeToTravel = 0.1f;
 
         isMoving = true;
+        objectToMove.GetComponent<BoxCollider>().enabled = false;
         while (t < 1)
         {
             t += timeToTravel;
@@ -94,7 +93,11 @@ public class HandPuller : MonoBehaviour
             //Debug.Log(t);
             yield return null;
         }
+        itemCollider.UpdateBoolCollisionState();
+
         yield return null;
+        objectToMove.GetComponent<BoxCollider>().enabled = true;
+
         isMoving = false;
 
         objectToMove.gameObject.SetActive(enableAtEndPosition);

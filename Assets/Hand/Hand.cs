@@ -16,7 +16,6 @@ public class Hand : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        itemCollider.DrawRaycast();
         handPuller.PullDownItem();
         handPuller.PushItem();
 

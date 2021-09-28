@@ -7,10 +7,14 @@ public class ItemCollider : MonoBehaviour
     BoxCollider boxCollider;
     RaycastOrigin raycastOrigins;
     float skinWidth = 0.1f;
-    int defaultraycastDistance = 1;
+    [SerializeField] int defaultraycastDistance = 1;
     int currentRaycastDistance = 1;
     RaycastHit rightHitInfo, leftHitInfo, upHitInfo, downHitInfo;
     GridManager gridManager;
+    Block[] blockSpawned;
+    Block block;
+
+
     Node node;
     BoolCollision boolCollision;
     Vector2Int coordinates;
@@ -41,19 +45,20 @@ public class ItemCollider : MonoBehaviour
     {
         boxCollider = GetComponent<BoxCollider>();
         gridManager = FindObjectOfType<GridManager>();
-        
-        
+        blockSpawned = gridManager.GetBlockSpawned();
+        block = GetComponent<Block>();
+
         //grid = gridManager.Grid;
         //node = gridManager.GetNode(coordinates);
 
-        if(!transform.GetComponent<Hand>())
+        if (!transform.GetComponent<Hand>())
         {
-        gridManager.updateConnectionEvent += UpdateConnectedTo;
+            gridManager.updateConnectionEvent += UpdateConnectedTo;
         }
     }
     private void OnDisable()
     {
-        if(!gridManager)
+        if (!gridManager)
         {
             return;
         }
@@ -62,7 +67,7 @@ public class ItemCollider : MonoBehaviour
     }
 
 
-    private void UpdateBoolCollisionState()
+    public void UpdateBoolCollisionState()
     {
         boolCollision = new BoolCollision(false);
         currentRaycastDistance = defaultraycastDistance;
@@ -108,22 +113,18 @@ public class ItemCollider : MonoBehaviour
 
     public void UpdateConnectedTo()
     {
-        coordinates = new Vector2Int(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y));
+          coordinates = new Vector2Int(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y));
 
         grid = gridManager.Grid;
         node = gridManager.GetNode(coordinates);
 
-             if (node == null) { return; }
-        if (node.isInHand == true)
-        {
-            node.ClearConnection();
-            return;
-        }
-
+        if (node == null) { return; }
+        if (node.isInHand == true) { node.ClearConnection(); return; }
 
         UpdateRaycastOrigins();
         UpdateBoolCollisionState();
         node.ClearConnection();
+        Debug.Log("node  named " + node.name+ "Has Updated his connection");
 
 
         if (boolCollision.isUpHit)

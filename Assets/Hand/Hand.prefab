@@ -186,6 +186,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enableLoopMovement: 0
+  gridManager: {fileID: 0}
+  gridSize: {x: 0, y: 0}
 --- !u!65 &5288122867040224123
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -211,6 +213,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb01c63f742617a41b30104ed24db9cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  defaultraycastDistance: 20
 --- !u!114 &900851901
 MonoBehaviour:
   m_ObjectHideFlags: 0

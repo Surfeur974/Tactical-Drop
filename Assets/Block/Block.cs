@@ -53,7 +53,8 @@ public class Block : MonoBehaviour
     {
         if (node.isMatched == true)
         {
-            material.color = matchedColor;
+            //material.color = matchedColor;
+            HandleMatched();
         }
         else
         {
@@ -61,4 +62,9 @@ public class Block : MonoBehaviour
         }
     }
 
+    private void HandleMatched()
+    {
+        node.Init();
+        this.transform.gameObject.SetActive(false);
+    }
 }

@@ -17,16 +17,19 @@ public class ConnectionHandler : MonoBehaviour
         //grid = gridManager.Grid;
         //gridSize = gridManager.GridSize;
     }
-    public List<Node> HandleFirstMatched(Dictionary<Vector2Int, Node> grid, Vector2Int gridSize) //Check throught all block in Grid and handle first match connection
+    public List<Node> GetFirstMatch(Dictionary<Vector2Int, Node> grid, Vector2Int gridSize) //Check throught all block in Grid and get first match connection
     {//IF bug maybe use REF //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         for (int x = 0; x < gridSize.x; x++)
         {
             for (int y = 0; y < gridSize.y; y++)
             {
                 Vector2Int coordinates = new Vector2Int(x, y);
+
+
                 if (grid.ContainsKey(coordinates) && !grid[coordinates].isMatched) //Check tous les node sauf ceux déja matched
                 {
                     Node node = grid[coordinates];
+
                     List<Node> nodeList = new List<Node> { };
 
                     nodeList.AddRange(GetAllVerticalConnectionNodesWithSameColor(node)); //Met dans une liste un node avec ses connection vertical de la meme couleur
@@ -34,9 +37,6 @@ public class ConnectionHandler : MonoBehaviour
                     {
                         nodeList.Clear();
                         nodeList.AddRange(GetAllConnectionNodesWithSameColor(node));
-
-                        MatchedNodeList(nodeList);
-
                         return nodeList;  //Remove return to handle all matched at once
                     }
                 }
@@ -52,9 +52,6 @@ public class ConnectionHandler : MonoBehaviour
             for (int y = 1 + (x % 2); y < gridSize.y - 1; y += 2)
             {
                 Vector2Int coordinates = new Vector2Int(x, y);
-
-                //grid[coordinates].isMatched = true;
-
                 if (grid.ContainsKey(coordinates) && !grid[coordinates].isMatched) //Check tous les node sauf ceux déja matched
                 {
                     Node node = grid[coordinates];
@@ -170,7 +167,7 @@ public class ConnectionHandler : MonoBehaviour
         }
     }
 
-    private void MatchedNodeList(List<Node> nodes)
+    public void MatchedNodeList(List<Node> nodes)
     {
         foreach (Node node in nodes)
         {
@@ -186,9 +183,10 @@ public class ConnectionHandler : MonoBehaviour
             for (int y = 0; y < gridSize.y; y++)
             {
                 Vector2Int coordinates = new Vector2Int(x, y);
+
                 if (grid.ContainsKey(coordinates))
                 {
-                    grid[coordinates].Init();
+                    grid[coordinates].isMatched = false;
                 }
 
             }

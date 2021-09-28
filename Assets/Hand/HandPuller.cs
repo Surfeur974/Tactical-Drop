@@ -102,7 +102,6 @@ public class HandPuller : MonoBehaviour
 
         if(enableAtEndPosition)
         {
-            gridManager.UpdateAllNodeConnection();
             gridManager.TestFor3Match();
         }
     }

@@ -4,18 +4,18 @@ using UnityEngine;
 public class HandMover : MonoBehaviour
 {
     [SerializeField] bool enableLoopMovement = false;
+    [SerializeField] GridManager gridManager;
 
 
     bool isMoving;
-    GridManager gridManager;
     [SerializeField] Vector2Int gridSize;
     Transform spriteScale;
+
 
     void Start()
     {
         PlaceHandInMiddle();
         isMoving = false;
-        gridManager = FindObjectOfType<GridManager>();
         gridSize = gridManager.GridSize;
         spriteScale = transform.GetComponentInChildren<HandSprite>().transform;
     }

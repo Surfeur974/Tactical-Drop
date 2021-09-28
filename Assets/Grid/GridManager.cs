@@ -66,6 +66,7 @@ public class GridManager : MonoBehaviour
         PushEnterToTestFotMatched3(grid, gridSize);
         PushBackSpaceToDematch(grid, gridSize);
 
+
     }
     public Node GetNode(Vector2Int coordinates)
     {
@@ -96,13 +97,12 @@ public class GridManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Return))
         {
-            UpdateAllNodeConnection();
-            connectionHandler.HandleFirstMatched(grid, gridSize);
+            TestFor3Match();
         }
     }
     public void UpdateAllNodeConnection() //Call UpdateConnectedTo() on all itemCollider subscribte to the event
     {
-        if(updateConnectionEvent != null)
+        if (updateConnectionEvent != null)
         {
             updateConnectionEvent();
         }
@@ -115,7 +115,14 @@ public class GridManager : MonoBehaviour
 
     public void TestFor3Match() //Update all connection and check for one combo
     {
-            
+        List<Node> matchedNodeList = new List<Node> { };
+        UpdateAllNodeConnection();
+        matchedNodeList = connectionHandler.GetFirstMatch(grid, gridSize);
+        if (matchedNodeList != null)
+        {
+            connectionHandler.MatchedNodeList(matchedNodeList);
+        }
+
     }
 
 

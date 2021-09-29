@@ -67,15 +67,35 @@ public class ItemCollider : MonoBehaviour
         gridManager.updateConnectionEvent -= UpdateBlock;
 
     }
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            Debug.Log("TopHitRaycast(10); called");
+            TopHitRaycast(10);
+        }
+    }
     public void UpdateBlock()
     {
         StartCoroutine(MoveBlock());
     }
-    IEnumerator MoveBlock() //TODO Work pour monter les bloc dans les vide mais pasa tout le temps..
+    IEnumerator MoveBlock() //Coroutine called by grid manager Event update
     {
-        yield return StartCoroutine(UpdateConnectedTo()); //On attend la fin de cette coroutine
-        TopHitRaycast(10); //if void au dessus bouge bloc jusqu'a pas vide
+        yield return StartCoroutine(UpdateConnectedTo()); //On update les connection et on attend la fin grace au yield return
+
+        bool isTopHitRaycatHit = TopHitRaycast(10); //On test si le bloc a un espace libre au dessus
+
+        while (isTopHitRaycatHit) //true if need to move
+        {
+            yield return StartCoroutine(MoveUpBlockIfVoid()); //On le move et on attend la fin
+
+            isTopHitRaycatHit = TopHitRaycast(10);  //On test si le bloc a un espace libre au dessus
+            StopAllCoroutines();    //On stop toutes les coroutines de tous le monde comme ça le dernier va call gridManager.TestFor3Match(); et permettre un update de la grid unique "Singlemerde"
+            gridManager.TestFor3Match();
+
+        }
     }
+
     public void UpdateBoolCollisionState()
     {
         boolCollision = new BoolCollision(false);
@@ -189,64 +209,46 @@ public class ItemCollider : MonoBehaviour
         UpdateRaycastOrigins();
         UpdateBoolCollisionState();
     }
-    private void Update()
+    private bool TopHitRaycast(int raylenght) //Used for detecting if bloc has something up him
     {
-        //DrawRaycast();
-    }
-    public RaycastHit TopHitRaycast(int raylenght) //Used for detecting if bloc has something up him
-    {
-
+        Debug.Log("TopHitRaycast is called from " + this.name);
         UpdateRaycastOrigins();
         raycastOrigins.up.y -= .1f;
 
         Physics.Raycast(raycastOrigins.up, Vector2.up, out topHit, raylenght);
         ////Debug.DrawRay(raycastOrigins.up, Vector2.up * topHit.distance, Color.red);
 
-        if ((topHit.distance > 1f || topHit.transform == null) && hand == null && block.Coordinates.y < gridManager.GridSize.y-1)
+        if ((topHit.distance > 1f || topHit.transform == null) && hand == null && block.Coordinates.y < gridManager.GridSize.y - 1)
         {
             block.GetCurrentNode().ClearConnection();
-            float maxYPosition = gridManager.GridSize.y;
-            Vector3Int startPosition = Vector3Int.RoundToInt(transform.position);
-            Vector3Int endPosition = new Vector3Int(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(maxYPosition), 0);
-
-            if (topHit.transform != null)
-            {
-                endPosition = Vector3Int.RoundToInt(topHit.transform.position);
-            }
-
-            endPosition += Vector3Int.down;
-
-            StartCoroutine(MoveUpBlockIfVoid(block.gameObject, startPosition, endPosition));
+            return true;
         }
-        return topHit;
+        return false;
     }
 
-    IEnumerator MoveUpBlockIfVoid(GameObject objectToMove, Vector3Int startposition, Vector3Int endposition)
+    IEnumerator MoveUpBlockIfVoid()
     {//Disabling the BoxCOllider when in movement, solve an issue where the collision were updated bizzarement
+
+        GameObject objectToMove = this.gameObject;
+        float maxYPosition = gridManager.GridSize.y;
+        Vector3Int startPosition = Vector3Int.RoundToInt(transform.position);
+        Vector3Int endPosition = new Vector3Int(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(maxYPosition), 0);
+
+        if (topHit.transform != null)
+        {
+            endPosition = Vector3Int.RoundToInt(topHit.transform.position);
+        }
+        endPosition += Vector3Int.down;
+
         float t = 0;
         float timeToTravel = 0.1f;
-
-        //objectToMove.GetComponent<BoxCollider>().enabled = false;
-        //objectToMove .transform.position = endposition;
-
         while (t < 1)
         {
             t += timeToTravel;
             objectToMove.GetComponentInChildren<BlockSprite>().transform.localScale = new Vector3(.8f, 1.2f, 1);
-            objectToMove.transform.position = Vector3.Lerp(startposition, endposition, t);
-
-            //Debug.Log(t);
+            objectToMove.transform.position = Vector3.Lerp(startPosition, endPosition, t);
             yield return null;
         }
-        //Needs to cal TopHitRaycast because if a colum of block the first already moves
-        gridManager.TestFor3Match();
-
-        yield return null;
-        //objectToMove.GetComponent<BoxCollider>().enabled = true;
         objectToMove.GetComponentInChildren<BlockSprite>().transform.localScale = new Vector3Int(1, 1, 1);
-        gridManager.TestFor3Match();
-
     }
-
-
 }

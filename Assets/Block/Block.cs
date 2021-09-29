@@ -56,7 +56,8 @@ public class Block : MonoBehaviour
 
     private void HandleMatched()
     {
-        node.Init();
+        //node.Init();
+        node.HandleMatched();
         this.transform.gameObject.SetActive(false);
     }
 

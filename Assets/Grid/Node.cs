@@ -34,7 +34,7 @@ public class Node : ScriptableObject
         isMatched = false;
         //isInHand = false;
     }
-    public void Init()
+    public void HandleMatched()
     {
         UpdateNameObject();
         ClearConnection();

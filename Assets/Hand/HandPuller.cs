@@ -34,7 +34,7 @@ public class HandPuller : MonoBehaviour
             Vector3Int endPosition = Vector3Int.RoundToInt(this.transform.position);
 
             gameObjectHitted.GetComponent<Block>().isInHand = true; //Si inHand == true, on clear connections
-            ObjectHittedNode.Init(); //Clear connection, isMatched==false, update node name
+            ObjectHittedNode.HandleMatched(); //Clear connection, isMatched==false, update node name
 
             StartCoroutine(Move(gameObjectHitted, startPosition, endPosition, false));
             gameObjectHitted.transform.parent = this.transform;

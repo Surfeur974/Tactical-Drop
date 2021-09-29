@@ -17,8 +17,8 @@ public class ItemCoordinatesLabeler : MonoBehaviour
     void Awake()
     {
         label = GetComponentInChildren<TextMeshPro>();
-        DisplayCoordinates();
-        UpdateNameObject();
+        //DisplayCoordinates();
+        //UpdateNameObject();
     }
 
     // Update is called once per frame
@@ -29,8 +29,8 @@ public class ItemCoordinatesLabeler : MonoBehaviour
             DisplayCoordinates();
             UpdateNameObject();
         }
-        DisplayCoordinates();
-        UpdateNameObject();
+        //DisplayCoordinates();
+        //UpdateNameObject();
 
     }
     private void DisplayCoordinates()

@@ -7,7 +7,7 @@ public class GridManager : MonoBehaviour
 {
     [SerializeField] Camera mainCamera;
     [SerializeField] float cameraZoom = 7.29f;
-
+    [SerializeField] bool gridWithoutMatchAtStart;
 
     Dictionary<Vector2Int, Node> grid = new Dictionary<Vector2Int, Node>();
     Vector2Int gridSize = new Vector2Int();
@@ -36,9 +36,12 @@ public class GridManager : MonoBehaviour
         gridSize = gridspawner.GetGridSize();
         grid = gridspawner.GetGrid();
         blockSpawned = gridspawner.GetBlockSpawned();
-        UpdateAllNodeConnection();
+        CallEventUpdateNodeConnection();
 
-        StartCoroutine(NoMatchGrid());
+        if(gridWithoutMatchAtStart)
+        {
+            StartCoroutine(NoMatchGrid());
+        }
 
 
         SetCameraToMiddleOfGrid();
@@ -52,7 +55,7 @@ public class GridManager : MonoBehaviour
             gridspawner.RandomizeAllBlockColor(blockSpawned);
             yield return null;
 
-            UpdateAllNodeConnection();
+            CallEventUpdateNodeConnection();
             i++;
         }
         Debug.Log("After " + i + " itération");
@@ -65,7 +68,20 @@ public class GridManager : MonoBehaviour
         PushEnterToTest(grid, gridSize);
         PushBackSpaceToDematch(grid, gridSize);
 
+        //IF match3
 
+        //IF voidupBlock
+
+    }
+    public void TestFor3Match() //TODO ADD HERE gestion de bouger bloc if void au dessu
+    {
+        List<Node> matchedNodeList = new List<Node> { };
+        CallEventUpdateNodeConnection();
+        matchedNodeList = connectionHandler.GetFirstMatch(grid, gridSize);
+        if (matchedNodeList != null)
+        {
+            connectionHandler.MatchedNodeList(matchedNodeList);
+        }
     }
     public Node GetNode(Vector2Int coordinates)
     {
@@ -104,7 +120,7 @@ public class GridManager : MonoBehaviour
             //StartCoroutine(NoMatchGrid());
         }
     }
-    public void UpdateAllNodeConnection() //Call UpdateConnectedTo() on all itemCollider subscribte to the event
+    public void CallEventUpdateNodeConnection() //Call UpdateConnectedTo() on all itemCollider subscribte to the event
     {
         if (updateConnectionEvent != null)
         {
@@ -118,19 +134,7 @@ public class GridManager : MonoBehaviour
         mainCamera.orthographicSize = cameraZoom;
     }//Set camera position to middle of the Grid
 
-    public void TestFor3Match() //TODO ADD HERE gestion de bouger bloc if void au dessu
-    {
-        List<Node> matchedNodeList = new List<Node> { };
-        UpdateAllNodeConnection();
-        matchedNodeList = connectionHandler.GetFirstMatch(grid, gridSize);
-        if (matchedNodeList != null)
-        {
-            connectionHandler.MatchedNodeList(matchedNodeList);
-        }
 
-
-
-    }
 
 
 }

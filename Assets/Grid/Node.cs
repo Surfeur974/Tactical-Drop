@@ -10,10 +10,11 @@ public class Node : ScriptableObject
     public List<Node> connectedToVertical = new List<Node>();
     public List<Node> connectedToHorizontal = new List<Node>();
     public bool isMatched;
-    public bool isCHecked;
+    public bool isChecked;
+
 
     public bool IsMatched { get { return isMatched; } }
-    public bool IsCHecked { get { return isCHecked; } }
+    public bool IsCHecked { get { return isChecked; } }
 
 
     public void Init(Vector2Int coordinates)
@@ -38,6 +39,7 @@ public class Node : ScriptableObject
         UpdateNameObject();
         ClearConnection();
         isMatched = false;
+
     }
     public void AddVerticalConnection(Node nodeToAdd)
     {

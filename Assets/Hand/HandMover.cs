@@ -23,6 +23,8 @@ public class HandMover : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        gridSize = gridManager.GridSize;
+
         MoveHand();
     }
     private void MoveHand() //Move hand by block size steps

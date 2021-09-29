@@ -69,7 +69,7 @@ public class ConnectionHandler : MonoBehaviour
         return false;
     }
 
-    private List<Node> GetAllVerticalConnectionNodesWithSameColor(Node node) //return for a node, all his vertical connections of same color
+    private List<Node> GetAllVerticalConnectionNodesWithSameColor(Node node) //TODO STOP AT GET3 vertical connection//return for a node, all his vertical connections of same color
     {
         alreadyCheckedNodes = new List<Node>();
         bool isRunning = true;
@@ -81,6 +81,7 @@ public class ConnectionHandler : MonoBehaviour
         {
             currentSearchNode = nodeToExplored.Dequeue();
             isRunning = CheckConnectedNode(currentSearchNode.connectedToVertical);//Check a list of node, Add it to queue "nodeToExplored" if same color, and to alreadyCheckedNodes List<Node>
+            if(alreadyCheckedNodes.Count > 2) { return alreadyCheckedNodes; }
         }
         return alreadyCheckedNodes;
     }
@@ -107,9 +108,11 @@ public class ConnectionHandler : MonoBehaviour
     }
     private List<Node> GetAllConnectionNodesWithSameColor(Node node) //return for a node, all his connections of same color, tobe used after 3 vertical detected
     {
+
+        if (node.connectedToVertical.Count == 0 && node.connectedToHorizontal.Count == 0) { return alreadyCheckedNodes; }
+
         alreadyCheckedNodes = new List<Node>();
         bool isRunning = true;
-        if (node.connectedToVertical.Count == 0 && node.connectedToHorizontal.Count == 0) { return alreadyCheckedNodes; }
         nodeToExplored.Clear();
         nodeToExplored.Enqueue(node);
         alreadyCheckedNodes.Add(node);
@@ -127,9 +130,10 @@ public class ConnectionHandler : MonoBehaviour
     }
     private List<Node> GetAllHorizontalConnectionNodesWithSameColor(Node node) //return for a node, all his Horizontal connections of same color
     {
+        if (node.connectedToHorizontal.Count == 0) { return alreadyCheckedNodes; }
+
         alreadyCheckedNodes = new List<Node>();
         bool isRunning = true;
-        if (node.connectedToHorizontal.Count == 0) { return alreadyCheckedNodes; }
         nodeToExplored.Clear();
         nodeToExplored.Enqueue(node);
         alreadyCheckedNodes.Add(node);
@@ -140,7 +144,7 @@ public class ConnectionHandler : MonoBehaviour
         }
         return alreadyCheckedNodes;
     }
-    private bool IsSameColor(List<Node> nodes) //Si tous les nodes de la liste sont de la meme couleur, return true
+    private bool IsSameColor(List<Node> nodes) //TODO optimize this //Si tous les nodes de la liste sont de la meme couleur, return true
     {
         Color testColor = new Color();
 

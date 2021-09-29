@@ -428,19 +428,35 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7600123988129839331, guid: 592fd49581594ce46aacd027e600dcf1, type: 3}
       propertyPath: gridSize.x
-      value: 6
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 7600123988129839331, guid: 592fd49581594ce46aacd027e600dcf1, type: 3}
       propertyPath: gridSize.y
-      value: 16
+      value: 14
       objectReference: {fileID: 0}
     - target: {fileID: 7600123988129839331, guid: 592fd49581594ce46aacd027e600dcf1, type: 3}
       propertyPath: colors.Array.size
-      value: 3
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7600123988129839331, guid: 592fd49581594ce46aacd027e600dcf1, type: 3}
+      propertyPath: colors.Array.data[3].b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7600123988129839331, guid: 592fd49581594ce46aacd027e600dcf1, type: 3}
+      propertyPath: colors.Array.data[3].g
+      value: 0.80729437
+      objectReference: {fileID: 0}
+    - target: {fileID: 7600123988129839331, guid: 592fd49581594ce46aacd027e600dcf1, type: 3}
+      propertyPath: colors.Array.data[3].r
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7600123988129839356, guid: 592fd49581594ce46aacd027e600dcf1, type: 3}
       propertyPath: m_Name
       value: Grid
+      objectReference: {fileID: 0}
+    - target: {fileID: 7600123988129839357, guid: 592fd49581594ce46aacd027e600dcf1, type: 3}
+      propertyPath: cameraZoom
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 7600123988129839357, guid: 592fd49581594ce46aacd027e600dcf1, type: 3}
       propertyPath: mainCamera

@@ -10,21 +10,18 @@ public class Block : MonoBehaviour
 
     Color initColor;
     Material material;
-    ItemCoordinatesLabeler itemCoordinatesLabeler;
     public Vector2Int Coordinates { get { return coordinates; } }
     public bool IsInHand { get { return isInHand; } }
-
 
     private void Start()
     {
         gridManager = FindObjectOfType<GridManager>();
 
         material = GetComponentInChildren<MeshRenderer>().material;
-        itemCoordinatesLabeler = GetComponent<ItemCoordinatesLabeler>();
+        coordinates.x = Mathf.RoundToInt(transform.position.x);
+        coordinates.y = Mathf.RoundToInt(transform.position.y);
 
         initColor = material.color;
-        coordinates = itemCoordinatesLabeler.GetCoordinates();
-
         if (gridManager.Grid.ContainsKey(coordinates))
         {
             node = gridManager.GetNode(coordinates);
@@ -42,7 +39,8 @@ public class Block : MonoBehaviour
 
     private void UpdateSelfNode()
     {
-        coordinates = itemCoordinatesLabeler.GetCoordinates();
+        coordinates.x = Mathf.RoundToInt(transform.position.x);
+        coordinates.y = Mathf.RoundToInt(transform.position.y);
         if (gridManager.Grid.ContainsKey(coordinates))
         {
             node = gridManager.GetNode(coordinates);

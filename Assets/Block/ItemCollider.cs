@@ -205,6 +205,7 @@ public class ItemCollider : MonoBehaviour
 
         if ((topHit.distance > 1f || topHit.transform == null) && hand == null && block.Coordinates.y < gridManager.GridSize.y-1)
         {
+            block.GetCurrentNode().ClearConnection();
             float maxYPosition = gridManager.GridSize.y;
             Vector3Int startPosition = Vector3Int.RoundToInt(transform.position);
             Vector3Int endPosition = new Vector3Int(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(maxYPosition), 0);
@@ -227,6 +228,8 @@ public class ItemCollider : MonoBehaviour
         float timeToTravel = 0.1f;
 
         //objectToMove.GetComponent<BoxCollider>().enabled = false;
+        //objectToMove .transform.position = endposition;
+
         while (t < 1)
         {
             t += timeToTravel;
@@ -236,7 +239,8 @@ public class ItemCollider : MonoBehaviour
             //Debug.Log(t);
             yield return null;
         }
-        UpdateBoolCollisionState();
+        //Needs to cal TopHitRaycast because if a colum of block the first already moves
+        gridManager.TestFor3Match();
 
         yield return null;
         //objectToMove.GetComponent<BoxCollider>().enabled = true;

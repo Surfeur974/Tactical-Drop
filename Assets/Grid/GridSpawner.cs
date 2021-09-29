@@ -47,9 +47,13 @@ public class GridSpawner : MonoBehaviour
                 Vector2Int coordinates = new Vector2Int(x, y);
                 Color blockColor = colors[Random.Range(0, colors.Length)];
 
-                //Color blockColor = colors[0];
-                //if (x == gridSize.x - 1 || x == gridSize.x - 3 || x == gridSize.x - 5) { blockColor = colors[1]; }
-                //if (y == gridSize.y - 4 || y == gridSize.y - 2 || y == gridSize.y - 6) { blockColor = colors[1]; }
+                //Color blockColor = colors[Random.Range(0, colors.Length-1)];
+                //if (x == gridSize.x - 1 || x == gridSize.x - 3 || x == gridSize.x - 5 || x == 0) { blockColor = colors[2]; }
+                //if (y == gridSize.y-1) { blockColor = colors[2]; }
+                //if (coordinates == new Vector2Int(2, 12)) { blockColor = colors[0]; }
+                //if (coordinates == new Vector2Int(2, 11)) { blockColor = colors[0]; }
+                //if (coordinates == new Vector2Int(2, 10)) { blockColor = colors[1]; }
+
 
                 //Color blockColor = colors[0];
                 //if (x == 0) { blockColor = colors[1]; }

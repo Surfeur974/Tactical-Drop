@@ -211,7 +211,7 @@ public class ItemCollider : MonoBehaviour
     }
     private bool TopHitRaycast(int raylenght) //Used for detecting if bloc has something up him
     {
-        Debug.Log("TopHitRaycast is called from " + this.name);
+        //Debug.Log("TopHitRaycast is called from " + this.name);
         UpdateRaycastOrigins();
         raycastOrigins.up.y -= .1f;
 

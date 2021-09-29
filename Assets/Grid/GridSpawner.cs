@@ -65,6 +65,7 @@ public class GridSpawner : MonoBehaviour
 
                 Node node_ = ScriptableObject.CreateInstance<Node>();
                 node_.Init(coordinates);
+                grid.Add(coordinates, node_);
 
                 if (y >= blankLinesOnBottom)
                 {
@@ -73,10 +74,10 @@ public class GridSpawner : MonoBehaviour
                     node_.Init(coordinates, blockColor); //Si on instancie un block on init la couleur du nodes aussi
                     blockSpawned[i] = block_;
                     i++;
+                    
                 }
 
 
-                grid.Add(coordinates, node_);
             }
         }
     }

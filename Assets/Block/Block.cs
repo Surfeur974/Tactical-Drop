@@ -13,7 +13,7 @@ public class Block : MonoBehaviour
     public Vector2Int Coordinates { get { return coordinates; } }
     public bool IsInHand { get { return isInHand; } }
 
-    private void Start()
+    private void OnEnable()
     {
         gridManager = FindObjectOfType<GridManager>();
 

@@ -27,7 +27,6 @@ public class Block : MonoBehaviour
             node = gridManager.GetNode(coordinates);
         }
     }
-
     private void Update()
     {
         if (IsInHand == false)
@@ -47,7 +46,6 @@ public class Block : MonoBehaviour
             node.updateNodeColor(material.color);
         }
     }
-
     private void ChangeBlockState()
     {
         if (node.isMatched == true)

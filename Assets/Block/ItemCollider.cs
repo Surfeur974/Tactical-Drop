@@ -11,6 +11,7 @@ public class ItemCollider : MonoBehaviour
     [SerializeField] int defaultraycastDistance = 1;
     int currentRaycastDistance = 1;
     RaycastHit rightHitInfo, leftHitInfo, upHitInfo, downHitInfo;
+    RaycastHit topHit;
     GridManager gridManager;
     Block[] blockSpawned;
     Block block;
@@ -75,7 +76,6 @@ public class ItemCollider : MonoBehaviour
         yield return StartCoroutine(UpdateConnectedTo()); //On attend la fin de cette coroutine
         TopHitRaycast(10); //if void au dessus bouge bloc jusqu'a pas vide
     }
-
     public void UpdateBoolCollisionState()
     {
         boolCollision = new BoolCollision(false);
@@ -88,24 +88,24 @@ public class ItemCollider : MonoBehaviour
 
         if (isUpHit)
         {
-            Debug.DrawRay(raycastOrigins.up, Vector2.up * upHitInfo.distance, Color.red);
+            //Debug.DrawRay(raycastOrigins.up, Vector2.up * upHitInfo.distance, Color.red);
             boolCollision.isUpHit = true;
         }
         if (isDownHit)
         {
-            Debug.DrawRay(raycastOrigins.down, Vector2.down * downHitInfo.distance, Color.red);
+            //Debug.DrawRay(raycastOrigins.down, Vector2.down * downHitInfo.distance, Color.red);
             boolCollision.isDownHit = true;
 
         }
         if (isLefttHit)
         {
-            Debug.DrawRay(raycastOrigins.left, Vector2.left * leftHitInfo.distance, Color.red);
+            //Debug.DrawRay(raycastOrigins.left, Vector2.left * leftHitInfo.distance, Color.red);
             boolCollision.isLeftHit = true;
 
         }
         if (isRightHit)
         {
-            Debug.DrawRay(raycastOrigins.right, Vector2.right * rightHitInfo.distance, Color.red);
+            //Debug.DrawRay(raycastOrigins.right, Vector2.right * rightHitInfo.distance, Color.red);
             boolCollision.isRightHit = true;
         }
     }
@@ -195,13 +195,12 @@ public class ItemCollider : MonoBehaviour
     }
     public RaycastHit TopHitRaycast(int raylenght) //Used for detecting if bloc has something up him
     {
-        RaycastHit topHit;
 
         UpdateRaycastOrigins();
         raycastOrigins.up.y -= .1f;
 
         Physics.Raycast(raycastOrigins.up, Vector2.up, out topHit, raylenght);
-        Debug.DrawRay(raycastOrigins.up, Vector2.up * topHit.distance, Color.red);
+        ////Debug.DrawRay(raycastOrigins.up, Vector2.up * topHit.distance, Color.red);
 
         if ((topHit.distance > 1f || topHit.transform == null) && hand == null && block.Coordinates.y < gridManager.GridSize.y-1)
         {

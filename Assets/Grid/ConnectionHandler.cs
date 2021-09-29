@@ -148,7 +148,7 @@ public class ConnectionHandler : MonoBehaviour
     {
         Color testColor = new Color();
 
-        for (int i = 0; i < nodes.Count; i++)
+        for (int i = nodes.Count-1; i < nodes.Count; i++) //Test lest node added with node[0]
         {
             testColor = nodes[0].color;
 

@@ -6,7 +6,7 @@ public class GridSpawner : MonoBehaviour
 {
     [SerializeField] Block blockPrefab;
     [SerializeField] Color[] colors;
-    [SerializeField] Vector2Int gridSize = new Vector2Int(4, 14);
+    [SerializeField] Vector2Int gridSize = new Vector2Int(8, 18);
     [SerializeField] int blankLinesOnBottom = 10;
 
     [SerializeField] Block[] blockSpawned;

@@ -11,11 +11,17 @@ public class Node : ScriptableObject
     public List<Node> connectedToHorizontal = new List<Node>();
     public bool isMatched;
     public bool isChecked;
+    public Block currentBlock;
 
 
     public bool IsMatched { get { return isMatched; } }
     public bool IsCHecked { get { return isChecked; } }
+    public Block CurrentBlock { get { return currentBlock; } }
 
+    public void SetCurrentBlock(Block currentBlock)
+    {
+        this.currentBlock = currentBlock;
+    }
 
     public void Init(Vector2Int coordinates)
     {

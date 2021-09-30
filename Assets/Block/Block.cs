@@ -44,6 +44,7 @@ public class Block : MonoBehaviour
         {
             node = gridManager.GetNode(coordinates);
             node.updateNodeColor(material.color);
+            node.SetCurrentBlock(this);
         }
     }
     private void ChangeBlockState()

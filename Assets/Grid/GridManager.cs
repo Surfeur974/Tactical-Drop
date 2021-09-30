@@ -47,7 +47,7 @@ public class GridManager : MonoBehaviour
         SetCameraToMiddleOfGrid();
 
     }
-    IEnumerator NoMatchGrid() //Coroutine used 
+    IEnumerator NoMatchGrid() //TODO can be optimize
     {
         int i = 0;
         while (connectionHandler.IsThereAConnection(grid, gridSize))
@@ -67,13 +67,12 @@ public class GridManager : MonoBehaviour
         PushSpaceToResetGrid();
         PushEnterToTest(grid, gridSize);
         PushBackSpaceToDematch(grid, gridSize);
-
         //IF match3
 
         //IF voidupBlock
 
     }
-    public void TestFor3Match() //TODO ADD HERE gestion de bouger bloc if void au dessu
+    public void TestFor3Match()
     {
         List<Node> matchedNodeList = new List<Node> { };
         CallEventUpdateNodeConnection();
@@ -83,6 +82,8 @@ public class GridManager : MonoBehaviour
             connectionHandler.MatchedNodeList(matchedNodeList);
         }
     }
+
+
     public Node GetNode(Vector2Int coordinates)
     {
         if (grid.ContainsKey(coordinates))

@@ -16,7 +16,7 @@ public class ItemCollider : MonoBehaviour
     Block[] blockSpawned;
     Block block;
     Hand hand;
-
+    ConnectionHandler connectionHandler;
     Node node;
     BoolCollision boolCollision;
     Vector2Int coordinates;
@@ -48,6 +48,7 @@ public class ItemCollider : MonoBehaviour
         boxCollider = GetComponent<BoxCollider>();
         gridManager = FindObjectOfType<GridManager>();
         blockSpawned = gridManager.GetBlockSpawned();
+        connectionHandler = gridManager.GetComponent<ConnectionHandler>();
         block = GetComponent<Block>();
         hand = GetComponent<Hand>();
         //grid = gridManager.Grid;
@@ -69,11 +70,11 @@ public class ItemCollider : MonoBehaviour
     }
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            Debug.Log("TopHitRaycast(10); called");
-            TopHitRaycast(10);
-        }
+        //if (Input.GetKeyDown(KeyCode.C))
+        //{
+        //    Debug.Log("TopHitRaycast(10); called");
+        //    TopHitRaycast(10);
+        //}
     }
     public void UpdateBlock()
     {
@@ -87,9 +88,9 @@ public class ItemCollider : MonoBehaviour
 
         while (isTopHitRaycatHit) //true if need to move
         {
-            yield return StartCoroutine(MoveUpBlockIfVoid()); //On le move et on attend la fin
+            yield return StartCoroutine(MoveUpCollumnBlockIfVoid()); //On le move et on attend la fin
 
-            isTopHitRaycatHit = TopHitRaycast(10);  //On test si le bloc a un espace libre au dessus
+            //isTopHitRaycatHit = TopHitRaycast(10);  //On test si le bloc a un espace libre au dessus
             StopAllCoroutines();    //On stop toutes les coroutines de tous le monde comme ça le dernier va call gridManager.TestFor3Match(); et permettre un update de la grid unique "Singlemerde"
             gridManager.TestFor3Match();
 
@@ -226,7 +227,59 @@ public class ItemCollider : MonoBehaviour
         return false;
     }
 
-    IEnumerator MoveUpBlockIfVoid()
+    IEnumerator MoveUpCollumnBlockIfVoid() //Group 
+    {//Disabling the BoxCOllider when in movement, solve an issue where the collision were updated bizzarement
+
+        GameObject objectToMove = this.gameObject;
+        Transform oldParent = objectToMove.transform.parent;
+        Node nodeToMove = block.GetCurrentNode();
+        List<Node> nodesToMove = new List<Node>();
+
+        yield return StartCoroutine(UpdateConnectedTo());
+
+        nodesToMove.AddRange(connectionHandler.GetAllVerticalConnection(nodeToMove));   ///PROBLEME ici le node n'a plus de connection, car on les efface pour eviter bug
+
+        GameObject groupToMove = new GameObject("GroupToMove");
+        groupToMove.transform.position = objectToMove.transform.position;
+        for (int i = 0; i < nodesToMove.Count; i++)
+        {
+            nodesToMove[i].ClearConnection(); //Need to clear connection before moving
+            nodesToMove[i].CurrentBlock.transform.parent = groupToMove.transform;
+        }
+
+        objectToMove = groupToMove;
+
+
+        float maxYPosition = gridManager.GridSize.y;
+        Vector3Int startPosition = Vector3Int.RoundToInt(transform.position);
+        Vector3Int endPosition = new Vector3Int(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(maxYPosition), 0);
+
+        if (topHit.transform != null)
+        {
+            endPosition = Vector3Int.RoundToInt(topHit.transform.position);
+        }
+        endPosition += Vector3Int.down;
+
+        float t = 0;
+        float blockFallSpeed = 0.1f;
+        while (t < 1)
+        {
+            t += blockFallSpeed;
+            //objectToMove.GetComponentInChildren<BlockSprite>().transform.localScale = new Vector3(.8f, 1.2f, 1);
+            objectToMove.transform.position = Vector3.Lerp(startPosition, endPosition, t);
+            yield return null;
+        }
+        //objectToMove.GetComponentInChildren<BlockSprite>().transform.localScale = new Vector3Int(1, 1, 1);
+
+        for (int i = groupToMove.transform.childCount-1; i > -1; i--)
+        {
+            groupToMove.transform.GetChild(i).transform.SetParent(oldParent);
+            //Debug.Log(i);
+            //Debug.Log(groupToMove.transform.GetChild(i));
+        }
+        Destroy(groupToMove);
+    }
+    IEnumerator MoveUpSingleBlockIfVoid()
     {//Disabling the BoxCOllider when in movement, solve an issue where the collision were updated bizzarement
 
         GameObject objectToMove = this.gameObject;

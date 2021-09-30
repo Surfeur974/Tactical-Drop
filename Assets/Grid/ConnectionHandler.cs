@@ -68,8 +68,31 @@ public class ConnectionHandler : MonoBehaviour
         }
         return false;
     }
+    public bool IsThereAConnectionRandomizeColorTheOneNode(Dictionary<Vector2Int, Node> grid, Vector2Int gridSize)
+    {
+        for (int x = 0; x < gridSize.x; x += 1)
+        {
+            for (int y = 1 + (x % 2); y < gridSize.y - 1; y += 2)
+            {
+                Vector2Int coordinates = new Vector2Int(x, y);
+                if (grid.ContainsKey(coordinates) && !grid[coordinates].isMatched) //Check tous les node sauf ceux déja matched
+                {
+                    Node node = grid[coordinates];
+                    List<Node> nodeList = new List<Node> { };
 
-    private List<Node> GetAllVerticalConnectionNodesWithSameColor(Node node) //TODO STOP AT GET3 vertical connection//return for a node, all his vertical connections of same color
+                    nodeList.AddRange(GetAllVerticalConnectionNodesWithSameColor(node)); //Met dans une liste un node avec ses connection vertical de la meme couleur
+                    if (IsListMinNumber(nodeList)) //Si Il a 2+ connection vertical on clear la list et on prend toutes ses connection
+                    {
+                        node.color = grid[new Vector2Int(Random.Range(0, gridSize.x), Random.Range(0, gridSize.y))].color;
+                        return true;  //Remove return to handle all matched at once
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private List<Node> GetAllVerticalConnectionNodesWithSameColor(Node node) 
     {
         alreadyCheckedNodes = new List<Node>();
         bool isRunning = true;
@@ -80,12 +103,27 @@ public class ConnectionHandler : MonoBehaviour
         while (nodeToExplored.Count > 0 && isRunning)
         {
             currentSearchNode = nodeToExplored.Dequeue();
-            isRunning = CheckConnectedNode(currentSearchNode.connectedToVertical);//Check a list of node, Add it to queue "nodeToExplored" if same color, and to alreadyCheckedNodes List<Node>
-            if(alreadyCheckedNodes.Count > 2) { return alreadyCheckedNodes; }
+            isRunning = CheckSameColorNodes(currentSearchNode.connectedToVertical);//Check a list of node, Add it to queue "nodeToExplored" if same color, and to alreadyCheckedNodes List<Node>
+            if (alreadyCheckedNodes.Count > 2) { return alreadyCheckedNodes; }
         }
         return alreadyCheckedNodes;
     }
-    private bool CheckConnectedNode(List<Node> nodeToCheck) //Check a list of node, Add it to queue "nodeToExplored" if same color, and to alreadyCheckedNodes List<Node>
+    public List<Node> GetAllVerticalConnection(Node node)
+    {
+        alreadyCheckedNodes = new List<Node>();
+        bool isRunning = true;
+        nodeToExplored.Clear();
+        nodeToExplored.Enqueue(node);
+        alreadyCheckedNodes.Add(node);
+        if (node.connectedToVertical.Count == 0) { return alreadyCheckedNodes; }
+        while (nodeToExplored.Count > 0 && isRunning)
+        {
+            currentSearchNode = nodeToExplored.Dequeue();
+            isRunning = CheckAnyColorNodes(currentSearchNode.connectedToVertical);//Check a list of node, Add it to queue "nodeToExplored", and to alreadyCheckedNodes List<Node>
+        }
+        return alreadyCheckedNodes;
+    }
+    private bool CheckSameColorNodes(List<Node> nodeToCheck) //Check a list of node, Add it to queue "nodeToExplored" if same color, and to alreadyCheckedNodes List<Node>
     {
         for (int i = 0; i < nodeToCheck.Count; i++)
         {
@@ -102,6 +140,19 @@ public class ConnectionHandler : MonoBehaviour
                 {
                     nodeToExplored.Enqueue(connectedNode);
                 }
+            }
+        }
+        return true;
+    }
+    private bool CheckAnyColorNodes(List<Node> nodeToCheck) //Check a list of node, Add it to queue "nodeToExplored" if same color, and to alreadyCheckedNodes List<Node>
+    {
+        for (int i = 0; i < nodeToCheck.Count; i++)
+        {
+            Node connectedNode = nodeToCheck[i];
+            if (!alreadyCheckedNodes.Contains(connectedNode))
+            {
+                alreadyCheckedNodes.Add(connectedNode);
+                nodeToExplored.Enqueue(connectedNode);
             }
         }
         return true;
@@ -124,7 +175,7 @@ public class ConnectionHandler : MonoBehaviour
             nodesToChecked.AddRange(currentSearchNode.connectedToVertical);
             nodesToChecked.AddRange(currentSearchNode.connectedToHorizontal);
 
-            isRunning = CheckConnectedNode(nodesToChecked);
+            isRunning = CheckSameColorNodes(nodesToChecked);
         }
         return alreadyCheckedNodes;
     }
@@ -140,15 +191,15 @@ public class ConnectionHandler : MonoBehaviour
         while (nodeToExplored.Count > 0 && isRunning)
         {
             currentSearchNode = nodeToExplored.Dequeue();
-            isRunning = CheckConnectedNode(currentSearchNode.connectedToHorizontal);
+            isRunning = CheckSameColorNodes(currentSearchNode.connectedToHorizontal);
         }
         return alreadyCheckedNodes;
     }
-    private bool IsSameColor(List<Node> nodes) //TODO optimize this //Si tous les nodes de la liste sont de la meme couleur, return true
+    private bool IsSameColor(List<Node> nodes)
     {
         Color testColor = new Color();
 
-        for (int i = nodes.Count-1; i < nodes.Count; i++) //Test lest node added with node[0]
+        for (int i = nodes.Count-1; i < nodes.Count; i++)
         {
             testColor = nodes[0].color;
 

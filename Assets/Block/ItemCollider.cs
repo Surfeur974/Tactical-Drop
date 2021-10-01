@@ -57,6 +57,7 @@ public class ItemCollider : MonoBehaviour
         if (!transform.GetComponent<Hand>())
         {
             gridManager.updateConnectionEvent += UpdateBlock;
+            gridManager.moveDownCollumnEvent += DownCollumn;
         }
     }
     private void OnDisable()
@@ -66,19 +67,22 @@ public class ItemCollider : MonoBehaviour
             return;
         }
         gridManager.updateConnectionEvent -= UpdateBlock;
+        gridManager.moveDownCollumnEvent -= DownCollumn;
 
     }
     void Update()
     {
-        //if (Input.GetKeyDown(KeyCode.C))
-        //{
-        //    Debug.Log("TopHitRaycast(10); called");
-        //    TopHitRaycast(10);
-        //}
+
     }
+
+
     public void UpdateBlock()
     {
         StartCoroutine(MoveBlock());
+    }
+    public void DownCollumn()
+    {
+        StartCoroutine(MoveDownCollumn());
     }
     IEnumerator MoveBlock() //Coroutine called by grid manager Event update
     {
@@ -227,7 +231,7 @@ public class ItemCollider : MonoBehaviour
         return false;
     }
 
-    IEnumerator MoveUpCollumnBlockIfVoid() //Group 
+    IEnumerator MoveUpCollumnBlockIfVoid() //Find node without up block group all collumn move it into game object move game object remove from game object detroy it 
     {//Disabling the BoxCOllider when in movement, solve an issue where the collision were updated bizzarement
 
         GameObject objectToMove = this.gameObject;
@@ -271,7 +275,52 @@ public class ItemCollider : MonoBehaviour
         }
         //objectToMove.GetComponentInChildren<BlockSprite>().transform.localScale = new Vector3Int(1, 1, 1);
 
-        for (int i = groupToMove.transform.childCount-1; i > -1; i--)
+        for (int i = groupToMove.transform.childCount - 1; i > -1; i--)
+        {
+            groupToMove.transform.GetChild(i).transform.SetParent(oldParent);
+            //Debug.Log(i);
+            //Debug.Log(groupToMove.transform.GetChild(i));
+        }
+        Destroy(groupToMove);
+    }
+    public IEnumerator MoveDownCollumn() //Find node without up block group all collumn move it into game object move game object remove from game object detroy it 
+    {//Disabling the BoxCOllider when in movement, solve an issue where the collision were updated bizzarement
+        GameObject objectToMove = this.gameObject;
+        Transform oldParent = objectToMove.transform.parent;
+        Node nodeToMove = block.GetCurrentNode();
+        List<Node> nodesToMove = new List<Node>();
+
+        yield return StartCoroutine(UpdateConnectedTo());
+
+        nodesToMove.AddRange(connectionHandler.GetAllVerticalConnection(nodeToMove));   ///PROBLEME ici le node n'a plus de connection, car on les efface pour eviter bug
+
+        GameObject groupToMove = new GameObject("GroupToMove");
+        groupToMove.transform.position = objectToMove.transform.position;
+        for (int i = 0; i < nodesToMove.Count; i++)
+        {
+            nodesToMove[i].ClearConnection(); //Need to clear connection before moving
+            nodesToMove[i].CurrentBlock.transform.parent = groupToMove.transform;
+        }
+
+        objectToMove = groupToMove;
+
+
+        float maxYPosition = gridManager.GridSize.y;
+        Vector3Int startPosition = Vector3Int.RoundToInt(transform.position);
+        Vector3Int endPosition = startPosition + Vector3Int.down;
+
+        float t = 0;
+        float blockFallSpeed = 0.1f;
+        while (t < 1)
+        {
+            t += blockFallSpeed;
+            //objectToMove.GetComponentInChildren<BlockSprite>().transform.localScale = new Vector3(.8f, 1.2f, 1);
+            objectToMove.transform.position = Vector3.Lerp(startPosition, endPosition, t);
+            yield return null;
+        }
+        //objectToMove.GetComponentInChildren<BlockSprite>().transform.localScale = new Vector3Int(1, 1, 1);
+
+        for (int i = groupToMove.transform.childCount - 1; i > -1; i--)
         {
             groupToMove.transform.GetChild(i).transform.SetParent(oldParent);
             //Debug.Log(i);

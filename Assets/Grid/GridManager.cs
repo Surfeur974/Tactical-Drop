@@ -23,6 +23,9 @@ public class GridManager : MonoBehaviour
     public delegate void UpdateConnectionDelegate();
     public event UpdateConnectionDelegate updateConnectionEvent;
 
+    public delegate void MoveDownCollumnsDelegate();
+    public event MoveDownCollumnsDelegate moveDownCollumnEvent;
+
     void Start()
     {
         gridspawner = GetComponent<GridSpawner>();
@@ -38,7 +41,7 @@ public class GridManager : MonoBehaviour
         blockSpawned = gridspawner.GetBlockSpawned();
         CallEventUpdateNodeConnection();
 
-        if(gridWithoutMatchAtStart)
+        if (gridWithoutMatchAtStart)
         {
             StartCoroutine(NoMatchGrid());
         }
@@ -67,6 +70,8 @@ public class GridManager : MonoBehaviour
         PushSpaceToResetGrid();
         PushEnterToTest(grid, gridSize);
         PushBackSpaceToDematch(grid, gridSize);
+        CallEventMovedownAllCollumn();
+
         //IF match3
 
         //IF voidupBlock
@@ -113,6 +118,7 @@ public class GridManager : MonoBehaviour
             //UpdateAllNodeConnection();
         }
     }
+
     private void PushEnterToTest(Dictionary<Vector2Int, Node> grid, Vector2Int gridSize) //Update all connection and check for one combo
     {
         if (Input.GetKeyDown(KeyCode.Return))
@@ -128,7 +134,16 @@ public class GridManager : MonoBehaviour
             updateConnectionEvent();
         }
     }
-
+    private void CallEventMovedownAllCollumn()
+    {
+        if (Input.GetKeyDown(KeyCode.Z))
+        {
+            if (moveDownCollumnEvent != null)
+            {
+                moveDownCollumnEvent();
+            }
+        }
+    }
     private void SetCameraToMiddleOfGrid()
     {
         mainCamera.transform.position = new Vector3(gridSize.x / 2, (gridSize.y) / 2, -10);

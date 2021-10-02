@@ -71,7 +71,7 @@ public class GridManager : MonoBehaviour
         PushEnterToTest(grid, gridSize);
         PushBackSpaceToDematch(grid, gridSize);
         CallEventMovedownAllCollumn();
-
+        AddTopLineTrigger();
         //IF match3
 
         //IF voidupBlock
@@ -142,6 +142,13 @@ public class GridManager : MonoBehaviour
             {
                 moveDownCollumnEvent();
             }
+        }
+    }
+    private void AddTopLineTrigger()
+    {
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            gridspawner.AddTopLine(grid, gridSize);
         }
     }
     private void SetCameraToMiddleOfGrid()

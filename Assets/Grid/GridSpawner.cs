@@ -81,6 +81,32 @@ public class GridSpawner : MonoBehaviour
             }
         }
     }
+    public void AddTopLine(Dictionary<Vector2Int, Node> grid, Vector2Int gridSize) //TODO add function to add line without match 3
+    {
+        int blockSpawnedNullIndex = 0; //Variable to store the index of the last block added and no to redo all the array search
+        for (int x = 0; x < gridSize.x; x++)
+        {
+            int y = gridSize.y-1;
+            Vector2Int coordinates = new Vector2Int(x, y);
+            Color blockColor = colors[Random.Range(0, colors.Length)];
+
+            Node node_ = grid[coordinates];
+            Block block_ = Instantiate(blockPrefab, new Vector3Int(coordinates.x, coordinates.y, 0), Quaternion.identity, transform);
+
+            block_.GetComponentInChildren<MeshRenderer>().material.color = blockColor;
+            node_.Init(coordinates, blockColor); //Si on instancie un block on init la couleur du nodes aussi
+
+            for (int i = blockSpawnedNullIndex; i < blockSpawned.Length; i++)
+            {
+                if(blockSpawned[i] == null)
+                {
+                    blockSpawnedNullIndex = i;
+                    blockSpawned[i] = block_;
+                    break;
+                }
+            }
+        }
+    }
 
     public void RandomizeAllBlockColor(Block[] blocksToRandomize)
     {

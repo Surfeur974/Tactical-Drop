@@ -46,11 +46,11 @@ public class ConnectionHandler : MonoBehaviour
         return null;
     }
 
-    public bool IsThereAConnection(Dictionary<Vector2Int, Node> grid, Vector2Int gridSize)
+    public bool IsThereAConnection(Dictionary<Vector2Int, Node> grid, Vector2Int gridSize, int startLineToCheck)
     {
         for (int x = 0; x < gridSize.x; x += 1)
         {
-            for (int y = 1 + (x % 2); y < gridSize.y - 1; y += 2)
+            for (int y = startLineToCheck + (x % 2); y < gridSize.y - 1; y += 2)
             {
                 Vector2Int coordinates = new Vector2Int(x, y);
                 if (grid.ContainsKey(coordinates) && !grid[coordinates].isMatched) //Check tous les node sauf ceux déja matched

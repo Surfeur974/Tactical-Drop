@@ -61,7 +61,7 @@ public class GridSpawner : MonoBehaviour
 
                 //Color blockColor = colors[0];
                 //if (x == 0) { blockColor = colors[1]; }
-                //if (y == gridSize.y - 7 || y == gridSize.y-3 || y == gridSize.y - 1 || y == gridSize.y - 2) { blockColor = Color.cyan; }
+                if (y == gridSize.y - 1 || y == gridSize.y-2) { blockColor = colors[2]; }
 
                 Node node_ = ScriptableObject.CreateInstance<Node>();
                 node_.Init(coordinates);
@@ -108,7 +108,7 @@ public class GridSpawner : MonoBehaviour
         }
     }
 
-    public void RandomizeAllBlockColor(Block[] blocksToRandomize)
+    public void RandomizeBlockColor(Block[] blocksToRandomize)
     {
         for (int i = 0; i < blocksToRandomize.Length; i++)
         {

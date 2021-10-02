@@ -53,9 +53,9 @@ public class GridManager : MonoBehaviour
     IEnumerator NoMatchGrid() //TODO can be optimize
     {
         int i = 0;
-        while (connectionHandler.IsThereAConnection(grid, gridSize))
+        while (connectionHandler.IsThereAConnection(grid, gridSize,0))
         {
-            gridspawner.RandomizeAllBlockColor(blockSpawned);
+            gridspawner.RandomizeBlockColor(blockSpawned);
             yield return null;
 
             CallEventUpdateNodeConnection();
@@ -71,10 +71,11 @@ public class GridManager : MonoBehaviour
         PushEnterToTest(grid, gridSize);
         PushBackSpaceToDematch(grid, gridSize);
         CallEventMovedownAllCollumn();
-        AddTopLineTrigger();
-        //IF match3
 
-        //IF voidupBlock
+        if(Input.GetKeyDown(KeyCode.E))
+        {
+            StartCoroutine(AddTopLineTrigger());
+        }
 
     }
     public void TestFor3Match()
@@ -144,17 +145,37 @@ public class GridManager : MonoBehaviour
             }
         }
     }
-    private void AddTopLineTrigger()
+    IEnumerator AddTopLineTrigger()
     {
-        if (Input.GetKeyDown(KeyCode.E))
+        int i = 0;
+        int indexBlockInTopLine = 0;
+        Block[] blockInTopLine = new Block[gridSize.x];
+        gridspawner.AddTopLine(grid, gridSize);
+        for (int j = 0; j < blockSpawned.Length; j++)
         {
-            gridspawner.AddTopLine(grid, gridSize);
+            if(blockSpawned[j] != null)
+            {
+                if(blockSpawned[j].Coordinates.y == gridSize.y-1) // To get all block in top line
+                {
+                    blockInTopLine[indexBlockInTopLine] = blockSpawned[j];
+                    indexBlockInTopLine++;
+                }
+            }
+        }
+        CallEventUpdateNodeConnection();
+        while (connectionHandler.IsThereAConnection(grid, gridSize, 0))
+        {
+            gridspawner.RandomizeBlockColor(blockInTopLine);
+            yield return null;
+
+            CallEventUpdateNodeConnection();
+            i++;
         }
     }
     private void SetCameraToMiddleOfGrid()
     {
-        mainCamera.transform.position = new Vector3(gridSize.x / 2, (gridSize.y) / 2, -10);
-        mainCamera.orthographicSize = cameraZoom;
+        //mainCamera.transform.position = new Vector3(gridSize.x / 2, (gridSize.y) / 2, -10);
+        //mainCamera.orthographicSize = cameraZoom;
     }//Set camera position to middle of the Grid
 
 

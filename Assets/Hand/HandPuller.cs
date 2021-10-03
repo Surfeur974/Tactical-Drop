@@ -16,11 +16,14 @@ public class HandPuller : MonoBehaviour
         itemCollider = GetComponent<ItemCollider>();
         isMoving = false;
     }
-
+    private void Update()
+    {
+        Debug.Log(Input.GetAxisRaw("Vertical"));
+    }
     public void PullDownItem() //Pull object touched by raycast and stocked them in a List<GameObject> and disable them
                                //TODO check if block are same color before authorizing pulling
     {
-        if (Input.GetKeyDown(KeyCode.DownArrow) && !isMoving)
+        if (!isMoving)
         {
             UpHit = itemCollider.GetUpHitInfo();
             if (UpHit.collider == null) { return; } //Si rien n'est Hit return
@@ -46,7 +49,7 @@ public class HandPuller : MonoBehaviour
     public void PushItem() //Send every stocked object at directed position
     {
         int offset = 1;
-        if (Input.GetKeyDown(KeyCode.UpArrow) && !isMoving)
+        if (!isMoving)
         {
             UpHit = itemCollider.GetUpHitInfo();
             float maxYPosition = gridManager.GridSize.y;

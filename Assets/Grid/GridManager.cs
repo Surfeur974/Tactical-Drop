@@ -113,7 +113,7 @@ public class GridManager : MonoBehaviour
     void PushSpaceToResetGrid() //Press Space to reset Grid et instanciate new blocks and UpdateAllNodeConnection
     {
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space) || Input.GetAxis("Fire1") == 1)
         {
             ResetGrid();
             //UpdateAllNodeConnection();

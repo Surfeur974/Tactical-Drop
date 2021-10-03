@@ -6,11 +6,10 @@ public class HandMover : MonoBehaviour
     [SerializeField] bool enableLoopMovement = false;
     [SerializeField] GridManager gridManager;
 
-
     bool isMoving;
     [SerializeField] Vector2Int gridSize;
     Transform spriteScale;
-
+    bool allowMove;
 
     void Start()
     {
@@ -25,11 +24,11 @@ public class HandMover : MonoBehaviour
     {
         gridSize = gridManager.GridSize;
 
-        MoveHand();
+        MoveHandAxis();
     }
     private void MoveHand() //Move hand by block size steps
     {
-        if(gridSize == Vector2Int.zero)
+        if (gridSize == Vector2Int.zero)
         {
             gridSize = gridManager.GridSize;
         }
@@ -44,6 +43,31 @@ public class HandMover : MonoBehaviour
             StartCoroutine(Move(Vector3Int.left));
         }
     }
+    private void MoveHandAxis() //Move hand by block size steps
+    {
+        float horizontalInput = Input.GetAxisRaw("Horizontal");
+
+        if (gridSize == Vector2Int.zero)
+        {
+            gridSize = gridManager.GridSize;
+        }
+        if (Input.GetAxisRaw("Horizontal") >= .8f && !isMoving && allowMove)
+        {
+            StartCoroutine(Move(Vector3Int.right));
+            allowMove = false;
+        }
+        if (Input.GetAxisRaw("Horizontal") <= -.8f && !isMoving && allowMove)
+        {
+            StartCoroutine(Move(Vector3Int.left));
+            allowMove = false;
+        }
+        if (Mathf.Abs(horizontalInput) <= .7f)
+        {
+            allowMove = true;
+        }
+    }
+
+
     private void PlaceHandInMiddle()
     {
 

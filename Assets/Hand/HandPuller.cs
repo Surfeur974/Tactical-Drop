@@ -18,7 +18,7 @@ public class HandPuller : MonoBehaviour
     }
     private void Update()
     {
-        Debug.Log(Input.GetAxisRaw("Vertical"));
+        //Debug.Log(Input.GetAxisRaw("Vertical"));
     }
     public void PullDownItem() //Pull object touched by raycast and stocked them in a List<GameObject> and disable them
                                //TODO check if block are same color before authorizing pulling

@@ -221,11 +221,12 @@ public class ItemCollider : MonoBehaviour
         raycastOrigins.up.y -= .1f;
 
         Physics.Raycast(raycastOrigins.up, Vector2.up, out topHit, raylenght);
-        ////Debug.DrawRay(raycastOrigins.up, Vector2.up * topHit.distance, Color.red);
+        Debug.DrawRay(raycastOrigins.up, Vector2.up * topHit.distance, Color.red);
 
-        if ((topHit.distance > 1f || topHit.transform == null) && hand == null && block.Coordinates.y < gridManager.GridSize.y - 1)
+        if ((topHit.distance > 1f || topHit.transform == null) && hand == null && block.Coordinates.y < gridManager.GridSize.y-1 )
         {
             block.GetCurrentNode().ClearConnection();
+            Debug.Log(block.name);
             return true;
         }
         return false;
@@ -243,16 +244,15 @@ public class ItemCollider : MonoBehaviour
 
         nodesToMove.AddRange(connectionHandler.GetAllVerticalConnection(nodeToMove));   ///PROBLEME ici le node n'a plus de connection, car on les efface pour eviter bug
 
-        GameObject groupToMove = new GameObject("GroupToMove");
-        groupToMove.transform.position = objectToMove.transform.position;
+        GameObject CollumnToMove = new GameObject("CollumnToMove");
+        CollumnToMove.transform.position = objectToMove.transform.position;
         for (int i = 0; i < nodesToMove.Count; i++)
         {
             nodesToMove[i].ClearConnection(); //Need to clear connection before moving
-            nodesToMove[i].CurrentBlock.transform.parent = groupToMove.transform;
+            nodesToMove[i].CurrentBlock.transform.parent = CollumnToMove.transform;
         }
 
-        objectToMove = groupToMove;
-
+        objectToMove = CollumnToMove;
 
         float maxYPosition = gridManager.GridSize.y;
         Vector3Int startPosition = Vector3Int.RoundToInt(transform.position);
@@ -275,13 +275,13 @@ public class ItemCollider : MonoBehaviour
         }
         //objectToMove.GetComponentInChildren<BlockSprite>().transform.localScale = new Vector3Int(1, 1, 1);
 
-        for (int i = groupToMove.transform.childCount - 1; i > -1; i--)
+        for (int i = CollumnToMove.transform.childCount - 1; i > -1; i--)
         {
-            groupToMove.transform.GetChild(i).transform.SetParent(oldParent);
-            //Debug.Log(i);
-            //Debug.Log(groupToMove.transform.GetChild(i));
+            CollumnToMove.transform.GetChild(i).transform.SetParent(oldParent);
         }
-        Destroy(groupToMove);
+        Destroy(CollumnToMove); //TODO some are not destroyed
+        yield return null;
+
     }
     public IEnumerator MoveDownCollumn() //Find node without up block group all collumn move it into game object move game object remove from game object detroy it 
     {//Disabling the BoxCOllider when in movement, solve an issue where the collision were updated bizzarement
@@ -294,15 +294,15 @@ public class ItemCollider : MonoBehaviour
 
         nodesToMove.AddRange(connectionHandler.GetAllVerticalConnection(nodeToMove));   ///PROBLEME ici le node n'a plus de connection, car on les efface pour eviter bug
 
-        GameObject groupToMove = new GameObject("GroupToMove");
-        groupToMove.transform.position = objectToMove.transform.position;
+        GameObject groupToMoveDownCollumn = new GameObject("groupToMoveDownCollumn");
+        groupToMoveDownCollumn.transform.position = objectToMove.transform.position;
         for (int i = 0; i < nodesToMove.Count; i++)
         {
             nodesToMove[i].ClearConnection(); //Need to clear connection before moving
-            nodesToMove[i].CurrentBlock.transform.parent = groupToMove.transform;
+            nodesToMove[i].CurrentBlock.transform.parent = groupToMoveDownCollumn.transform;
         }
 
-        objectToMove = groupToMove;
+        objectToMove = groupToMoveDownCollumn;
 
 
         float maxYPosition = gridManager.GridSize.y;
@@ -320,13 +320,13 @@ public class ItemCollider : MonoBehaviour
         }
         //objectToMove.GetComponentInChildren<BlockSprite>().transform.localScale = new Vector3Int(1, 1, 1);
 
-        for (int i = groupToMove.transform.childCount - 1; i > -1; i--)
+        for (int i = groupToMoveDownCollumn.transform.childCount - 1; i > -1; i--)
         {
-            groupToMove.transform.GetChild(i).transform.SetParent(oldParent);
+            groupToMoveDownCollumn.transform.GetChild(i).transform.SetParent(oldParent);
             //Debug.Log(i);
             //Debug.Log(groupToMove.transform.GetChild(i));
         }
-        Destroy(groupToMove);
+        Destroy(groupToMoveDownCollumn);
     }
     IEnumerator MoveUpSingleBlockIfVoid()
     {//Disabling the BoxCOllider when in movement, solve an issue where the collision were updated bizzarement

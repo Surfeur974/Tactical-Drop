@@ -63,24 +63,6 @@ public class Node : ScriptableObject
             connectedToHorizontal.Add(nodeToAdd);
         }
     }
-    public void RemoveConnection(Node nodeToRemove)
-    {
-
-        if (connectedToVertical.Contains(nodeToRemove))
-        {
-            connectedToVertical.Remove(nodeToRemove);
-        }
-        else if (connectedToHorizontal.Contains(nodeToRemove))
-        {
-            connectedToHorizontal.Remove(nodeToRemove);
-        }
-        else
-        {
-            Debug.Log("Cannot remove Node");
-        }
-
-    }
-
     public void ClearConnection()
     {
         if(connectedToHorizontal != null)
@@ -92,12 +74,6 @@ public class Node : ScriptableObject
             connectedToVertical.Clear();
         }
     }
-    public int NumberOfVerticalConnection()
-    {
-        int numberOfVerticalConnection = 0;
-        return numberOfVerticalConnection = connectedToVertical.Count;
-    }
-
     private void UpdateNameObject()
     {
         this.name = "(" + coordinates.x + "," + coordinates.y + ")";

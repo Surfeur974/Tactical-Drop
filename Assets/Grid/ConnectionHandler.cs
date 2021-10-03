@@ -8,16 +8,10 @@ public class ConnectionHandler : MonoBehaviour
     //[SerializeField] GridManager gridManager;
 
     Node currentSearchNode;
-    List<Node> linkedNodeOfSameColor = new List<Node>();
     List<Node> alreadyCheckedNodes = new List<Node>();
     Queue<Node> nodeToExplored = new Queue<Node>();
 
-    private void Start()
-    {
-        //gridManager = GetComponent<GridManager>();
-        //grid = gridManager.Grid;
-        //gridSize = gridManager.GridSize;
-    }
+
     public List<Node> GetFirstMatch(Dictionary<Vector2Int, Node> grid, Vector2Int gridSize) //Check throught all block in Grid and get first match connection
     {//IF bug maybe use REF //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         for (int x = 0; x < gridSize.x; x++)

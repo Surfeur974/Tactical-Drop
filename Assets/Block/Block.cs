@@ -2,21 +2,23 @@ using UnityEngine;
 
 public class Block : MonoBehaviour
 {
-    [SerializeField] Node node;
+    [SerializeField] int blockScore;
     [SerializeField] Vector2Int coordinates;
-    [SerializeField] Color matchedColor;
     public bool isInHand;
     GridManager gridManager;
+    UIDisplay uIDisplay;
 
     Color initColor;
     Material material;
     public Vector2Int Coordinates { get { return coordinates; } }
     public bool IsInHand { get { return isInHand; } }
+    [SerializeField] Node node;
 
     private void OnEnable()
     {
+        blockScore = 100;
         gridManager = FindObjectOfType<GridManager>();
-
+        uIDisplay = FindObjectOfType<UIDisplay>();
         material = GetComponentInChildren<MeshRenderer>().material;
         coordinates.x = Mathf.RoundToInt(transform.position.x);
         coordinates.y = Mathf.RoundToInt(transform.position.y);
@@ -58,6 +60,7 @@ public class Block : MonoBehaviour
     private void HandleMatched()
     {
         //node.Init();
+        uIDisplay.AddScore(blockScore, initColor);
         node.HandleMatched();
         this.transform.gameObject.SetActive(false);
     }

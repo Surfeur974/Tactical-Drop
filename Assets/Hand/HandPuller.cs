@@ -8,18 +8,16 @@ public class HandPuller : MonoBehaviour
     ItemCollider itemCollider;
     RaycastHit UpHit;
     Queue<GameObject> blockStoredInHand = new Queue<GameObject>();
-   [SerializeField ]GridManager gridManager;
+   [SerializeField] GridManager gridManager;
     bool isMoving = true;
+    [SerializeField] float timeToTravel = 0.1f;
 
     void Start()
     {
         itemCollider = GetComponent<ItemCollider>();
         isMoving = false;
     }
-    private void Update()
-    {
-        //Debug.Log(Input.GetAxisRaw("Vertical"));
-    }
+
     public void PullDownItem() //Pull object touched by raycast and stocked them in a List<GameObject> and disable them
                                //TODO check if block are same color before authorizing pulling
     {
@@ -44,7 +42,6 @@ public class HandPuller : MonoBehaviour
 
         }
     }
-
     public void PushItem() //Send every stocked object at directed position
     {
         int offset = 1;
@@ -77,11 +74,12 @@ public class HandPuller : MonoBehaviour
         }
 
     }
-    IEnumerator Move(GameObject objectToMove, Vector3Int startposition, Vector3Int endposition, bool enableAtEndPosition)
+    IEnumerator Move(GameObject objectToMove, Vector3Int startposition, Vector3Int endPosition, bool enableAtEndPosition)
     {//Disabling the BoxCOllider when in movement, solve an issue where the collision were updated bizzarement
         //Debug.Log(endposition);
         float t = 0;
-        float timeToTravel = 0.1f;
+
+        endPosition.y = Mathf.Clamp(endPosition.y, 0, gridManager.GridSize.y - 1);
 
         isMoving = true;
         objectToMove.GetComponent<BoxCollider>().enabled = false;
@@ -89,7 +87,7 @@ public class HandPuller : MonoBehaviour
         {
             t += timeToTravel;
             objectToMove.GetComponentInChildren<BlockSprite>().transform.localScale = new Vector3(.8f, 1.2f, 1);
-            objectToMove.transform.position = Vector3.Lerp(startposition, endposition, t);
+            objectToMove.transform.position = Vector3.Lerp(startposition, endPosition, t);
 
             //Debug.Log(t);
             yield return null;

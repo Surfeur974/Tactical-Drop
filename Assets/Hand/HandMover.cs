@@ -77,7 +77,7 @@ public class HandMover : MonoBehaviour
     {
         isMoving = true;
         float t = 0;
-        float timeToTravel = .1f;
+        float timeToTravel = .01f;
         Vector3 startposition = transform.position;
         Vector3 endposition = transform.position + direction;
         int maxHandPosition = gridSize.x - 1;

@@ -13,11 +13,12 @@ public class GridManager : MonoBehaviour
     [SerializeField] Dictionary<Vector2Int, Block> debugGrid = new Dictionary<Vector2Int, Block>();
     Vector2Int gridSize = new Vector2Int();
     [SerializeField] Block[] blockSpawned;
+    List<Block> matchedNodeList;
 
 
     GridSpawner gridspawner;
     ConnectionHandler connectionHandler;
-
+    ItemCollider itemCollider;
     public Dictionary<Vector2Int, Block> Grid { get { return grid; } }
     public Vector2Int GridSize { get { return gridSize; } }
 
@@ -31,6 +32,8 @@ public class GridManager : MonoBehaviour
     {
         gridspawner = GetComponent<GridSpawner>();
         connectionHandler = GetComponent<ConnectionHandler>();
+        itemCollider = GetComponent<ItemCollider>();
+
         //ResetGrid();
     }
 
@@ -80,12 +83,14 @@ public class GridManager : MonoBehaviour
     }
     public void TestFor3Match()
     {
-        List<Block> matchedNodeList = new List<Block> { };
+        matchedNodeList = new List<Block>();
         CallEventUpdateNodeConnection();
         matchedNodeList = connectionHandler.GetFirstMatch(grid, gridSize);
         if (matchedNodeList != null)
         {
             connectionHandler.MatchedNodeList(matchedNodeList);
+            TestFor3Match();
+            
         }
     }
 

@@ -78,7 +78,7 @@ public class ConnectionHandler : MonoBehaviour
     }
     public List<Block> GetAllVerticalConnection(Block block)
     {
-        alreadyCheckedNodes = new List<Block>();
+        alreadyCheckedNodes.Clear();
         bool isRunning = true;
         nodeToExplored.Clear();
         nodeToExplored.Enqueue(block);
@@ -144,22 +144,6 @@ public class ConnectionHandler : MonoBehaviour
             nodesToChecked.AddRange(currentSearchBlock.connectedToHorizontal);
 
             isRunning = CheckSameColorNodes(nodesToChecked);
-        }
-        return alreadyCheckedNodes;
-    }
-    private List<Block> GetAllHorizontalConnectionNodesWithSameColor(Block block) //return for a node, all his Horizontal connections of same color
-    {
-        if (block.connectedToHorizontal.Count == 0) { return alreadyCheckedNodes; }
-
-        alreadyCheckedNodes = new List<Block>();
-        bool isRunning = true;
-        nodeToExplored.Clear();
-        nodeToExplored.Enqueue(block);
-        alreadyCheckedNodes.Add(block);
-        while (nodeToExplored.Count > 0 && isRunning)
-        {
-            currentSearchBlock = nodeToExplored.Dequeue();
-            isRunning = CheckSameColorNodes(currentSearchBlock.connectedToHorizontal);
         }
         return alreadyCheckedNodes;
     }

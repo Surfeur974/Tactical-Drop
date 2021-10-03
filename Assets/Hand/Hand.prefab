@@ -214,6 +214,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultraycastDistance: 20
+  blockFallSpeed: 0.46
 --- !u!114 &900851901
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -226,3 +227,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4279d9c604cd2d4f9ab5c8837a568e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gridManager: {fileID: 0}
+  timeToTravel: 0.1

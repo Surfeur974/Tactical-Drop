@@ -7,12 +7,12 @@ public class ConnectionHandler : MonoBehaviour
     [SerializeField] int minNumberForVerticalConnection = 3;
     //[SerializeField] GridManager gridManager;
 
-    Node currentSearchNode;
-    List<Node> alreadyCheckedNodes = new List<Node>();
-    Queue<Node> nodeToExplored = new Queue<Node>();
+    Block currentSearchBlock;
+    List<Block> alreadyCheckedNodes = new List<Block>();
+    Queue<Block> nodeToExplored = new Queue<Block>();
 
 
-    public List<Node> GetFirstMatch(Dictionary<Vector2Int, Node> grid, Vector2Int gridSize) //Check throught all block in Grid and get first match connection
+    public List<Block> GetFirstMatch(Dictionary<Vector2Int, Block> grid, Vector2Int gridSize) //Check throught all block in Grid and get first match connection
     {//IF bug maybe use REF //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         for (int x = 0; x < gridSize.x; x++)
         {
@@ -20,19 +20,17 @@ public class ConnectionHandler : MonoBehaviour
             {
                 Vector2Int coordinates = new Vector2Int(x, y);
 
-
-                if (grid.ContainsKey(coordinates) && !grid[coordinates].isMatched) //Check tous les node sauf ceux déja matched
+                if (grid[coordinates]!=null && !grid[coordinates].isMatched) //Check tous les node sauf ceux déja matched
                 {
-                    Node node = grid[coordinates];
+                    Block block = grid[coordinates];
+                    List<Block> blockList = new List<Block> { };
 
-                    List<Node> nodeList = new List<Node> { };
-
-                    nodeList.AddRange(GetAllVerticalConnectionNodesWithSameColor(node)); //Met dans une liste un node avec ses connection vertical de la meme couleur
-                    if (IsListMinNumber(nodeList)) //Si Il a 2+ connection vertical on clear la list et on prend toutes ses connection
+                    blockList.AddRange(GetAllVerticalConnectionNodesWithSameColor(block)); //Met dans une liste un node avec ses connection vertical de la meme couleur
+                    if (IsListMinNumber(blockList)) //Si Il a 2+ connection vertical on clear la list et on prend toutes ses connection
                     {
-                        nodeList.Clear();
-                        nodeList.AddRange(GetAllConnectionNodesWithSameColor(node));
-                        return nodeList;  //Remove return to handle all matched at once
+                        blockList.Clear();
+                        blockList.AddRange(GetAllConnectionNodesWithSameColor(block));
+                        return blockList;  //Remove return to handle all matched at once
                     }
                 }
             }
@@ -40,20 +38,20 @@ public class ConnectionHandler : MonoBehaviour
         return null;
     }
 
-    public bool IsThereAConnection(Dictionary<Vector2Int, Node> grid, Vector2Int gridSize, int startLineToCheck)
+    public bool IsThereAConnection(Dictionary<Vector2Int, Block> grid, Vector2Int gridSize, int startLineToCheck)
     {
         for (int x = 0; x < gridSize.x; x += 1)
         {
             for (int y = startLineToCheck + (x % 2); y < gridSize.y - 1; y += 2)
             {
                 Vector2Int coordinates = new Vector2Int(x, y);
-                if (grid.ContainsKey(coordinates) && !grid[coordinates].isMatched) //Check tous les node sauf ceux déja matched
+                if (grid[coordinates] != null && !grid[coordinates].isMatched) //Check tous les node sauf ceux déja matched
                 {
-                    Node node = grid[coordinates];
-                    List<Node> nodeList = new List<Node> { };
+                    Block block = grid[coordinates];
+                    List<Block> blockList = new List<Block> { };
 
-                    nodeList.AddRange(GetAllVerticalConnectionNodesWithSameColor(node)); //Met dans une liste un node avec ses connection vertical de la meme couleur
-                    if (IsListMinNumber(nodeList)) //Si Il a 2+ connection vertical on clear la list et on prend toutes ses connection
+                    blockList.AddRange(GetAllVerticalConnectionNodesWithSameColor(block)); //Met dans une liste un node avec ses connection vertical de la meme couleur
+                    if (IsListMinNumber(blockList)) //Si Il a 2+ connection vertical on clear la list et on prend toutes ses connection
                     {
                         return true;  //Remove return to handle all matched at once
                     }
@@ -62,142 +60,118 @@ public class ConnectionHandler : MonoBehaviour
         }
         return false;
     }
-    public bool IsThereAConnectionRandomizeColorTheOneNode(Dictionary<Vector2Int, Node> grid, Vector2Int gridSize)
+    private List<Block> GetAllVerticalConnectionNodesWithSameColor(Block block) 
     {
-        for (int x = 0; x < gridSize.x; x += 1)
-        {
-            for (int y = 1 + (x % 2); y < gridSize.y - 1; y += 2)
-            {
-                Vector2Int coordinates = new Vector2Int(x, y);
-                if (grid.ContainsKey(coordinates) && !grid[coordinates].isMatched) //Check tous les node sauf ceux déja matched
-                {
-                    Node node = grid[coordinates];
-                    List<Node> nodeList = new List<Node> { };
-
-                    nodeList.AddRange(GetAllVerticalConnectionNodesWithSameColor(node)); //Met dans une liste un node avec ses connection vertical de la meme couleur
-                    if (IsListMinNumber(nodeList)) //Si Il a 2+ connection vertical on clear la list et on prend toutes ses connection
-                    {
-                        node.color = grid[new Vector2Int(Random.Range(0, gridSize.x), Random.Range(0, gridSize.y))].color;
-                        return true;  //Remove return to handle all matched at once
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    private List<Node> GetAllVerticalConnectionNodesWithSameColor(Node node) 
-    {
-        alreadyCheckedNodes = new List<Node>();
+        alreadyCheckedNodes = new List<Block>();
         bool isRunning = true;
-        if (node.connectedToVertical.Count == 0) { return alreadyCheckedNodes; }
+        if (block.connectedToVertical.Count == 0) { return alreadyCheckedNodes; }
         nodeToExplored.Clear();
-        nodeToExplored.Enqueue(node);
-        alreadyCheckedNodes.Add(node);
+        nodeToExplored.Enqueue(block);
+        alreadyCheckedNodes.Add(block);
         while (nodeToExplored.Count > 0 && isRunning)
         {
-            currentSearchNode = nodeToExplored.Dequeue();
-            isRunning = CheckSameColorNodes(currentSearchNode.connectedToVertical);//Check a list of node, Add it to queue "nodeToExplored" if same color, and to alreadyCheckedNodes List<Node>
+            currentSearchBlock = nodeToExplored.Dequeue();
+            isRunning = CheckSameColorNodes(currentSearchBlock.connectedToVertical);//Check a list of node, Add it to queue "nodeToExplored" if same color, and to alreadyCheckedNodes List<Block>
             if (alreadyCheckedNodes.Count > 2) { return alreadyCheckedNodes; }
         }
         return alreadyCheckedNodes;
     }
-    public List<Node> GetAllVerticalConnection(Node node)
+    public List<Block> GetAllVerticalConnection(Block block)
     {
-        alreadyCheckedNodes = new List<Node>();
+        alreadyCheckedNodes = new List<Block>();
         bool isRunning = true;
         nodeToExplored.Clear();
-        nodeToExplored.Enqueue(node);
-        alreadyCheckedNodes.Add(node);
-        if (node.connectedToVertical.Count == 0) { return alreadyCheckedNodes; }
+        nodeToExplored.Enqueue(block);
+        alreadyCheckedNodes.Add(block);
+        if (block.connectedToVertical.Count == 0) { return alreadyCheckedNodes; }
         while (nodeToExplored.Count > 0 && isRunning)
         {
-            currentSearchNode = nodeToExplored.Dequeue();
-            isRunning = CheckAnyColorNodes(currentSearchNode.connectedToVertical);//Check a list of node, Add it to queue "nodeToExplored", and to alreadyCheckedNodes List<Node>
+            currentSearchBlock = nodeToExplored.Dequeue();
+            isRunning = CheckAnyColorBlocks(currentSearchBlock.connectedToVertical);//Check a list of node, Add it to queue "nodeToExplored", and to alreadyCheckedNodes List<Block>
         }
         return alreadyCheckedNodes;
     }
-    private bool CheckSameColorNodes(List<Node> nodeToCheck) //Check a list of node, Add it to queue "nodeToExplored" if same color, and to alreadyCheckedNodes List<Node>
+    private bool CheckSameColorNodes(List<Block> blockToCheck) //Check a list of node, Add it to queue "nodeToExplored" if same color, and to alreadyCheckedNodes List<Block>
     {
-        for (int i = 0; i < nodeToCheck.Count; i++)
+        for (int i = 0; i < blockToCheck.Count; i++)
         {
-            Node connectedNode = nodeToCheck[i];
-            if (!alreadyCheckedNodes.Contains(connectedNode))
+            Block connectedBlock = blockToCheck[i];
+            if (!alreadyCheckedNodes.Contains(connectedBlock))
             {
-                alreadyCheckedNodes.Add(connectedNode);
+                alreadyCheckedNodes.Add(connectedBlock);
 
                 if (!IsSameColor(alreadyCheckedNodes))
                 {
-                    alreadyCheckedNodes.Remove(connectedNode);
+                    alreadyCheckedNodes.Remove(connectedBlock);
                 }
                 else
                 {
-                    nodeToExplored.Enqueue(connectedNode);
+                    nodeToExplored.Enqueue(connectedBlock);
                 }
             }
         }
         return true;
     }
-    private bool CheckAnyColorNodes(List<Node> nodeToCheck) //Check a list of node, Add it to queue "nodeToExplored" if same color, and to alreadyCheckedNodes List<Node>
+    private bool CheckAnyColorBlocks(List<Block> BlockToCheck) //Check a list of node, Add it to queue "nodeToExplored" if same color, and to alreadyCheckedNodes List<Block>
     {
-        for (int i = 0; i < nodeToCheck.Count; i++)
+        for (int i = 0; i < BlockToCheck.Count; i++)
         {
-            Node connectedNode = nodeToCheck[i];
-            if (!alreadyCheckedNodes.Contains(connectedNode))
+            Block connectedBlock = BlockToCheck[i];
+            if (!alreadyCheckedNodes.Contains(connectedBlock))
             {
-                alreadyCheckedNodes.Add(connectedNode);
-                nodeToExplored.Enqueue(connectedNode);
+                alreadyCheckedNodes.Add(connectedBlock);
+                nodeToExplored.Enqueue(connectedBlock);
             }
         }
         return true;
     }
-    private List<Node> GetAllConnectionNodesWithSameColor(Node node) //return for a node, all his connections of same color, tobe used after 3 vertical detected
+    private List<Block> GetAllConnectionNodesWithSameColor(Block block) //return for a node, all his connections of same color, tobe used after 3 vertical detected
     {
 
-        if (node.connectedToVertical.Count == 0 && node.connectedToHorizontal.Count == 0) { return alreadyCheckedNodes; }
+        if (block.connectedToVertical.Count == 0 && block.connectedToHorizontal.Count == 0) { return alreadyCheckedNodes; }
 
-        alreadyCheckedNodes = new List<Node>();
+        alreadyCheckedNodes = new List<Block>();
         bool isRunning = true;
         nodeToExplored.Clear();
-        nodeToExplored.Enqueue(node);
-        alreadyCheckedNodes.Add(node);
+        nodeToExplored.Enqueue(block);
+        alreadyCheckedNodes.Add(block);
         while (nodeToExplored.Count > 0 && isRunning)
         {
-            currentSearchNode = nodeToExplored.Dequeue();
+            currentSearchBlock = nodeToExplored.Dequeue();
 
-            List<Node> nodesToChecked = new List<Node>();
-            nodesToChecked.AddRange(currentSearchNode.connectedToVertical);
-            nodesToChecked.AddRange(currentSearchNode.connectedToHorizontal);
+            List<Block> nodesToChecked = new List<Block>();
+            nodesToChecked.AddRange(currentSearchBlock.connectedToVertical);
+            nodesToChecked.AddRange(currentSearchBlock.connectedToHorizontal);
 
             isRunning = CheckSameColorNodes(nodesToChecked);
         }
         return alreadyCheckedNodes;
     }
-    private List<Node> GetAllHorizontalConnectionNodesWithSameColor(Node node) //return for a node, all his Horizontal connections of same color
+    private List<Block> GetAllHorizontalConnectionNodesWithSameColor(Block block) //return for a node, all his Horizontal connections of same color
     {
-        if (node.connectedToHorizontal.Count == 0) { return alreadyCheckedNodes; }
+        if (block.connectedToHorizontal.Count == 0) { return alreadyCheckedNodes; }
 
-        alreadyCheckedNodes = new List<Node>();
+        alreadyCheckedNodes = new List<Block>();
         bool isRunning = true;
         nodeToExplored.Clear();
-        nodeToExplored.Enqueue(node);
-        alreadyCheckedNodes.Add(node);
+        nodeToExplored.Enqueue(block);
+        alreadyCheckedNodes.Add(block);
         while (nodeToExplored.Count > 0 && isRunning)
         {
-            currentSearchNode = nodeToExplored.Dequeue();
-            isRunning = CheckSameColorNodes(currentSearchNode.connectedToHorizontal);
+            currentSearchBlock = nodeToExplored.Dequeue();
+            isRunning = CheckSameColorNodes(currentSearchBlock.connectedToHorizontal);
         }
         return alreadyCheckedNodes;
     }
-    private bool IsSameColor(List<Node> nodes)
+    private bool IsSameColor(List<Block> blocks)
     {
         Color testColor = new Color();
 
-        for (int i = nodes.Count-1; i < nodes.Count; i++)
+        for (int i = blocks.Count-1; i < blocks.Count; i++)
         {
-            testColor = nodes[0].color;
+            testColor = blocks[0].GetBlockColor();
 
-            if (testColor != nodes[i].color)
+            if (testColor != blocks[i].GetBlockColor())
             {
                 return false;
             }
@@ -205,9 +179,9 @@ public class ConnectionHandler : MonoBehaviour
         return true;
     }
 
-    private bool IsListMinNumber(List<Node> nodeList)//Si liste.Count >= minNumberForVerticalCOmbo return true
+    private bool IsListMinNumber(List<Block> blockList)//Si liste.Count >= minNumberForVerticalCOmbo return true
     {
-        if (nodeList.Count >= minNumberForVerticalConnection)
+        if (blockList.Count >= minNumberForVerticalConnection)
         {
             return true;
         }
@@ -217,16 +191,16 @@ public class ConnectionHandler : MonoBehaviour
         }
     }
 
-    public void MatchedNodeList(List<Node> nodes)
+    public void MatchedNodeList(List<Block> blocks)
     {
-        foreach (Node node in nodes)
+        foreach (Block block in blocks)
         {
-            node.isMatched = true;
+            block.isMatched = true;
         }
     }//Set all isMatched bool at true for the list
 
 
-    public void DematchAll(Dictionary<Vector2Int, Node> grid, Vector2Int gridSize)//TODO a refaire avec des events pour updates les collisiton
+    public void DematchAll(Dictionary<Vector2Int, Block> grid, Vector2Int gridSize)//TODO a refaire avec des events pour updates les collisiton
     {
         for (int x = 0; x < gridSize.x; x++)
         {
@@ -234,7 +208,7 @@ public class ConnectionHandler : MonoBehaviour
             {
                 Vector2Int coordinates = new Vector2Int(x, y);
 
-                if (grid.ContainsKey(coordinates))
+                if (grid[coordinates] != null)
                 {
                     grid[coordinates].isMatched = false;
                 }

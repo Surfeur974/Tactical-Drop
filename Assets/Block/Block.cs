@@ -1,18 +1,42 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Block : MonoBehaviour
 {
     [SerializeField] int blockScore;
     [SerializeField] Vector2Int coordinates;
-    public bool isInHand;
+    bool isInHand;
     GridManager gridManager;
     UIDisplay uIDisplay;
+    public bool isMatched;
 
-    Color initColor;
     Material material;
     public Vector2Int Coordinates { get { return coordinates; } }
-    public bool IsInHand { get { return isInHand; } }
-    [SerializeField] Node node;
+    public List<Block> connectedToVertical = new List<Block>();
+    public List<Block> connectedToHorizontal = new List<Block>();
+    public bool IsMatched { get { return isMatched; } }
+
+
+
+    public void Init(Vector2Int coordinates)
+    {
+        this.coordinates = coordinates;
+        UpdateNameObject();
+        ClearConnectionUpdateGridPosition();
+        isMatched = false;
+        //isInHand = false;
+    }
+    public void Init(Vector2Int coordinates, Color colorToInit)
+    {
+        material.color = colorToInit;
+        this.coordinates = coordinates;
+
+        UpdateNameObject();
+        ClearConnectionUpdateGridPosition();
+        isMatched = false;
+        //isInHand = false;
+    }
+
 
     private void OnEnable()
     {
@@ -22,52 +46,104 @@ public class Block : MonoBehaviour
         material = GetComponentInChildren<MeshRenderer>().material;
         coordinates.x = Mathf.RoundToInt(transform.position.x);
         coordinates.y = Mathf.RoundToInt(transform.position.y);
-
-        initColor = material.color;
-        if (gridManager.Grid.ContainsKey(coordinates))
-        {
-            node = gridManager.GetNode(coordinates);
-        }
+        FillGrid();
     }
     private void Update()
     {
-        if (IsInHand == false)
+        //FillGrid();
+        //material.color = color;
+        if (isInHand == false)
         {
-            UpdateSelfNode();
-            ChangeBlockState();
+            UpdateBlockCoordinates();
+        }
+        HandleMatched();
+    }
+    private void FillGrid()
+    {
+        UpdateBlockCoordinates();
+        if (gridManager.Grid.ContainsKey(coordinates) && gridManager.Grid[coordinates] != this) //Si la place dans grille a ses coordinates n'est pas this block
+        {
+            gridManager.Grid[coordinates] = this;
+        }
+    }
+    private void LeaveGrid()
+    {
+        if (gridManager.Grid.ContainsKey(coordinates) && gridManager.Grid[coordinates] == this)
+        {
+            gridManager.Grid[coordinates] = null;
+        }
+    }
+    public void InHand(bool isInHand)
+    {
+        this.isInHand = isInHand;
+        if (this.isInHand == false) //S'il n'est plus en main tu prend ta place dans la grille
+        {
+            UpdateBlockCoordinates();
+            gridManager.Grid[coordinates] = this;
+        }
+        else //SInon tu laisse ta place dans la grille
+        {
+            gridManager.Grid[coordinates] = null;
         }
     }
 
-    private void UpdateSelfNode()
+    private void UpdateBlockCoordinates()
     {
         coordinates.x = Mathf.RoundToInt(transform.position.x);
         coordinates.y = Mathf.RoundToInt(transform.position.y);
-        if (gridManager.Grid.ContainsKey(coordinates))
-        {
-            node = gridManager.GetNode(coordinates);
-            node.updateNodeColor(material.color);
-            node.SetCurrentBlock(this);
-        }
+        UpdateNameObject();
     }
-    private void ChangeBlockState()
+    public Color GetBlockColor()
     {
-        if (node.isMatched == true)
-        {
-            HandleMatched();
-        }
+        return material.color;
     }
 
-    private void HandleMatched()
+    public void HandleMatched()
     {
-        //node.Init();
-        uIDisplay.AddScore(blockScore, initColor);
-        node.HandleMatched();
+        if (isMatched == true)
+        {
+            uIDisplay.AddScore(blockScore, material.color);
+            UpdateNameObject();
+            LeaveGrid();
+
         this.transform.gameObject.SetActive(false);
+        }
     }
-
-    public Node GetCurrentNode()
+    public void AddVerticalConnection(Block blockToAdd)
     {
-        return node;
-    }
+        if (!connectedToVertical.Contains(blockToAdd))
+        {
+            connectedToVertical.Add(blockToAdd);
+        }
 
+
+    }
+    public void AddHorizontalConnection(Block blockToAdd)
+    {
+        if (!connectedToHorizontal.Contains(blockToAdd))
+        {
+            connectedToHorizontal.Add(blockToAdd);
+        }
+    }
+    public void ClearConnectionUpdateGridPosition()
+    {
+        LeaveGrid();
+        FillGrid();
+        if (connectedToHorizontal != null)
+        {
+            connectedToHorizontal.Clear();
+        }
+        if (connectedToVertical != null)
+        {
+            connectedToVertical.Clear();
+        }
+    }
+    private void UpdateNameObject()
+    {
+        this.name = "(" + coordinates.x + "," + coordinates.y + ")";
+    }
+    public void ChangeBlockColor(Color colorToUpdateTo)
+    {
+        this.material.color = colorToUpdateTo;
+    }
 }

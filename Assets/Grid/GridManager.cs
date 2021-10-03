@@ -6,18 +6,19 @@ using UnityEngine;
 public class GridManager : MonoBehaviour
 {
     [SerializeField] Camera mainCamera;
-    [SerializeField] float cameraZoom = 7.29f;
+    //[SerializeField] float cameraZoom = 7.29f;
     [SerializeField] bool gridWithoutMatchAtStart;
 
-    Dictionary<Vector2Int, Node> grid = new Dictionary<Vector2Int, Node>();
+    [SerializeField] Dictionary<Vector2Int, Block> grid = new Dictionary<Vector2Int, Block>();
+    [SerializeField] Dictionary<Vector2Int, Block> debugGrid = new Dictionary<Vector2Int, Block>();
     Vector2Int gridSize = new Vector2Int();
-    Block[] blockSpawned;
+    [SerializeField] Block[] blockSpawned;
 
 
     GridSpawner gridspawner;
     ConnectionHandler connectionHandler;
 
-    public Dictionary<Vector2Int, Node> Grid { get { return grid; } }
+    public Dictionary<Vector2Int, Block> Grid { get { return grid; } }
     public Vector2Int GridSize { get { return gridSize; } }
 
     public delegate void UpdateConnectionDelegate();
@@ -76,11 +77,10 @@ public class GridManager : MonoBehaviour
         {
             StartCoroutine(AddTopLineTrigger());
         }
-
     }
     public void TestFor3Match()
     {
-        List<Node> matchedNodeList = new List<Node> { };
+        List<Block> matchedNodeList = new List<Block> { };
         CallEventUpdateNodeConnection();
         matchedNodeList = connectionHandler.GetFirstMatch(grid, gridSize);
         if (matchedNodeList != null)
@@ -90,9 +90,9 @@ public class GridManager : MonoBehaviour
     }
 
 
-    public Node GetNode(Vector2Int coordinates)
+    public Block GetBlock(Vector2Int coordinates)
     {
-        if (grid.ContainsKey(coordinates))
+        if (grid.ContainsKey(coordinates) && grid[coordinates]!=null)
         {
             return grid[coordinates];
         }
@@ -103,7 +103,7 @@ public class GridManager : MonoBehaviour
         return blockSpawned;
     }
 
-    private void PushBackSpaceToDematch(Dictionary<Vector2Int, Node> grid, Vector2Int gridSize) //Update all connection and check for one combo
+    private void PushBackSpaceToDematch(Dictionary<Vector2Int, Block> grid, Vector2Int gridSize) //Update all connection and check for one combo
     {
         if (Input.GetKeyDown(KeyCode.Backspace))
         {
@@ -120,7 +120,7 @@ public class GridManager : MonoBehaviour
         }
     }
 
-    private void PushEnterToTest(Dictionary<Vector2Int, Node> grid, Vector2Int gridSize) //Update all connection and check for one combo
+    private void PushEnterToTest(Dictionary<Vector2Int, Block> grid, Vector2Int gridSize) //Update all connection and check for one combo
     {
         if (Input.GetKeyDown(KeyCode.Return))
         {

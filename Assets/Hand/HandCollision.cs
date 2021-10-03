@@ -11,10 +11,9 @@ public class HandCollision : MonoBehaviour
     float currentRaycastDistance = 2f;
     RaycastHit rightHitInfo, leftHitInfo, upHitInfo, downHitInfo;
     GridManager gridManager;
-    Node node;
     BoolCollision boolCollision;
     Vector2Int coordinates;
-    Dictionary<Vector2Int, Node> grid = new Dictionary<Vector2Int, Node>();
+    Dictionary<Vector2Int, Block> grid = new Dictionary<Vector2Int, Block>();
     public float DefaultraycastDistance
     {  //GETTER SETTER
         get { return defaultraycastDistance; }

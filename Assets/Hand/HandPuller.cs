@@ -29,16 +29,15 @@ public class HandPuller : MonoBehaviour
             if (UpHit.collider == null) { return; } //Si rien n'est Hit return
 
             GameObject gameObjectHitted = UpHit.transform.gameObject; //Recup gameObject hitted
-            Vector2Int nodePosition = Vector2Int.RoundToInt(gameObjectHitted.transform.position);
-            Node ObjectHittedNode = gridManager.GetNode(nodePosition);
+            Block blockHitted = gameObjectHitted.GetComponent<Block>();
+            Vector2Int blockPosition = Vector2Int.RoundToInt(gameObjectHitted.transform.position);
 
 
-            Vector3Int startPosition = new Vector3Int(nodePosition.x, nodePosition.y, 0);
+            Vector3Int startPosition = new Vector3Int(blockPosition.x, blockPosition.y, 0);
             Vector3Int endPosition = Vector3Int.RoundToInt(this.transform.position);
 
-            gameObjectHitted.GetComponent<Block>().isInHand = true; //Si inHand == true, on clear connections
-            ObjectHittedNode.HandleMatched(); //Clear connection, isMatched==false, update node name
-
+            blockHitted.InHand(true); //Si inHand == true, on clear connections
+            blockHitted.ClearConnectionUpdateGridPosition(); //Clear connection, isMatched==false, update node name
             StartCoroutine(Move(gameObjectHitted, startPosition, endPosition, false));
             gameObjectHitted.transform.parent = this.transform;
             blockStoredInHand.Enqueue(gameObjectHitted.gameObject);
@@ -64,15 +63,15 @@ public class HandPuller : MonoBehaviour
             endPosition += Vector3Int.down * offset;
             while (blockStoredInHand.Count > 0)
             {
-                GameObject currentBlockToPush = blockStoredInHand.Dequeue();
-                Node ObjectToPushdNode = gridManager.GetNode(currentBlockToPush.GetComponent<Block>().Coordinates);
+                GameObject currentGameObjectToPush = blockStoredInHand.Dequeue();
+                Block currentBlockToPush = currentGameObjectToPush.GetComponent<Block>();
 
+                StartCoroutine(Move(currentGameObjectToPush, startPosition, endPosition, true));
 
-                currentBlockToPush.GetComponent<Block>().isInHand = false; //Si inHand == true, on clear connections
-                StartCoroutine(Move(currentBlockToPush, startPosition, endPosition, true));
+                currentGameObjectToPush.transform.parent = gridManager.transform;
+                currentGameObjectToPush.SetActive(true);
+                currentBlockToPush.Init(new Vector2Int(endPosition.x, endPosition.y)); //Si inHand == true, on clear connections
 
-                currentBlockToPush.transform.parent = gridManager.transform;
-                currentBlockToPush.SetActive(true);
                 endPosition += Vector3Int.down;
             }
         }
@@ -102,11 +101,12 @@ public class HandPuller : MonoBehaviour
 
         isMoving = false;
 
-        objectToMove.gameObject.SetActive(enableAtEndPosition);
+        objectToMove.SetActive(enableAtEndPosition);
         objectToMove.GetComponentInChildren<BlockSprite>().transform.localScale = new Vector3Int(1, 1, 1);
 
         if(enableAtEndPosition)
         {
+            objectToMove.GetComponent<Block>().ClearConnectionUpdateGridPosition();
             gridManager.TestFor3Match();
         }
     }

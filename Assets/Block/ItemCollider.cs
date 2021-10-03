@@ -17,10 +17,9 @@ public class ItemCollider : MonoBehaviour
     Block block;
     Hand hand;
     ConnectionHandler connectionHandler;
-    Node node;
     BoolCollision boolCollision;
     Vector2Int coordinates;
-    Dictionary<Vector2Int, Node> grid = new Dictionary<Vector2Int, Node>();
+    Dictionary<Vector2Int, Block> grid = new Dictionary<Vector2Int, Block>();
     public int DefaultraycastDistance
     {  //GETTER SETTER
         get { return defaultraycastDistance; }
@@ -68,24 +67,20 @@ public class ItemCollider : MonoBehaviour
         }
         gridManager.updateConnectionEvent -= UpdateBlock;
         gridManager.moveDownCollumnEvent -= DownCollumn;
-
     }
-    void Update()
-    {
-
-    }
-
-
     public void UpdateBlock()
     {
-        StartCoroutine(MoveBlock());
+        StartCoroutine(UpdateMoveBlock());
     }
     public void DownCollumn()
     {
         StartCoroutine(MoveDownCollumn());
     }
-    IEnumerator MoveBlock() //Coroutine called by grid manager Event update
+    IEnumerator UpdateMoveBlock() //Coroutine called by grid manager Event update
     {
+        block = GetComponent<Block>();
+
+        if (block == null) { yield break; }
         yield return StartCoroutine(UpdateConnectedTo()); //On update les connection et on attend la fin grace au yield return
 
         bool isTopHitRaycatHit = TopHitRaycast(10); //On test si le bloc a un espace libre au dessus
@@ -149,23 +144,23 @@ public class ItemCollider : MonoBehaviour
     {
         coordinates = new Vector2Int(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y));
         grid = gridManager.Grid;
-        node = gridManager.GetNode(coordinates);
+        block = GetComponent<Block>();
 
-        if (node == null) { yield return null; }
+        if (block == null) {yield break;}
         //if (node.isInHand == true) { node.ClearConnection(); return; }
 
         UpdateRaycastOrigins();
         UpdateBoolCollisionState();
-        node.ClearConnection();
+        block.ClearConnectionUpdateGridPosition();
 
 
         if (boolCollision.isUpHit)
         {
             {
                 Vector2Int upHitPosition = (Vector2Int)Vector3Int.RoundToInt(upHitInfo.transform.position);
-                if (grid.ContainsKey(upHitPosition))
+                if (grid.ContainsKey(upHitPosition) && grid[upHitPosition]!=null && grid[upHitPosition] != block)
                 {
-                    node.AddVerticalConnection(grid[upHitPosition]);
+                    block.AddVerticalConnection(grid[upHitPosition]);
                 }
             }
         }
@@ -173,9 +168,9 @@ public class ItemCollider : MonoBehaviour
         {
             {
                 Vector2Int downHitPosition = (Vector2Int)Vector3Int.RoundToInt(downHitInfo.transform.position);
-                if (grid.ContainsKey(downHitPosition))
+                if (grid.ContainsKey(downHitPosition) && grid[downHitPosition] != null && grid[downHitPosition] != block)
                 {
-                    node.AddVerticalConnection(grid[downHitPosition]);
+                    block.AddVerticalConnection(grid[downHitPosition]);
                 }
             }
         }
@@ -183,9 +178,9 @@ public class ItemCollider : MonoBehaviour
         {
             {
                 Vector2Int leftHitPosition = (Vector2Int)Vector3Int.RoundToInt(leftHitInfo.transform.position);
-                if (grid.ContainsKey(leftHitPosition))
+                if (grid.ContainsKey(leftHitPosition) && grid[leftHitPosition] != null && grid[leftHitPosition] != block)
                 {
-                    node.AddHorizontalConnection(grid[leftHitPosition]);
+                    block.AddHorizontalConnection(grid[leftHitPosition]);
                 }
             }
         }
@@ -193,14 +188,13 @@ public class ItemCollider : MonoBehaviour
         {
             {
                 Vector2Int rightHitPosition = (Vector2Int)Vector3Int.RoundToInt(rightHitInfo.transform.position);
-                if (grid.ContainsKey(rightHitPosition))
+                if (grid.ContainsKey(rightHitPosition) && grid[rightHitPosition] != null && grid[rightHitPosition] != block)
                 {
-                    node.AddHorizontalConnection(grid[rightHitPosition]);
+                    block.AddHorizontalConnection(grid[rightHitPosition]);
                 }
             }
         }
         yield return null;
-
     }
 
     public RaycastHit GetUpHitInfo()
@@ -221,12 +215,12 @@ public class ItemCollider : MonoBehaviour
         raycastOrigins.up.y -= .1f;
 
         Physics.Raycast(raycastOrigins.up, Vector2.up, out topHit, raylenght);
-        Debug.DrawRay(raycastOrigins.up, Vector2.up * topHit.distance, Color.red);
+        //Debug.DrawRay(raycastOrigins.up, Vector2.up * topHit.distance, Color.red);
 
-        if ((topHit.distance > 1f || topHit.transform == null) && hand == null && block.Coordinates.y < gridManager.GridSize.y-1 )
+        if (block != null && (topHit.distance > 1f || topHit.transform == null) && hand == null && block.Coordinates.y < gridManager.GridSize.y-1 )
         {
-            block.GetCurrentNode().ClearConnection();
-            Debug.Log(block.name);
+            block.ClearConnectionUpdateGridPosition();
+            //Debug.Log(block.name);
             return true;
         }
         return false;
@@ -237,19 +231,19 @@ public class ItemCollider : MonoBehaviour
 
         GameObject objectToMove = this.gameObject;
         Transform oldParent = objectToMove.transform.parent;
-        Node nodeToMove = block.GetCurrentNode();
-        List<Node> nodesToMove = new List<Node>();
+        Block blockToMove = this.gameObject.GetComponent<Block>();
+        List<Block> blocksToMove = new List<Block>();
 
         yield return StartCoroutine(UpdateConnectedTo());
 
-        nodesToMove.AddRange(connectionHandler.GetAllVerticalConnection(nodeToMove));   ///PROBLEME ici le node n'a plus de connection, car on les efface pour eviter bug
+        blocksToMove.AddRange(connectionHandler.GetAllVerticalConnection(blockToMove));   ///PROBLEME ici le node n'a plus de connection, car on les efface pour eviter bug
 
         GameObject CollumnToMove = new GameObject("CollumnToMove");
         CollumnToMove.transform.position = objectToMove.transform.position;
-        for (int i = 0; i < nodesToMove.Count; i++)
+        for (int i = 0; i < blocksToMove.Count; i++)
         {
-            nodesToMove[i].ClearConnection(); //Need to clear connection before moving
-            nodesToMove[i].CurrentBlock.transform.parent = CollumnToMove.transform;
+            blocksToMove[i].ClearConnectionUpdateGridPosition(); //Need to clear connection before moving
+            blocksToMove[i].transform.parent = CollumnToMove.transform;
         }
 
         objectToMove = CollumnToMove;
@@ -285,21 +279,22 @@ public class ItemCollider : MonoBehaviour
     }
     public IEnumerator MoveDownCollumn() //Find node without up block group all collumn move it into game object move game object remove from game object detroy it 
     {//Disabling the BoxCOllider when in movement, solve an issue where the collision were updated bizzarement
+
         GameObject objectToMove = this.gameObject;
         Transform oldParent = objectToMove.transform.parent;
-        Node nodeToMove = block.GetCurrentNode();
-        List<Node> nodesToMove = new List<Node>();
+        Block blockToMove = this.gameObject.GetComponent<Block>();
+        List<Block> blocksToMove = new List<Block>();
 
         yield return StartCoroutine(UpdateConnectedTo());
 
-        nodesToMove.AddRange(connectionHandler.GetAllVerticalConnection(nodeToMove));   ///PROBLEME ici le node n'a plus de connection, car on les efface pour eviter bug
+        blocksToMove.AddRange(connectionHandler.GetAllVerticalConnection(blockToMove));   ///PROBLEME ici le node n'a plus de connection, car on les efface pour eviter bug
 
         GameObject groupToMoveDownCollumn = new GameObject("groupToMoveDownCollumn");
         groupToMoveDownCollumn.transform.position = objectToMove.transform.position;
-        for (int i = 0; i < nodesToMove.Count; i++)
+        for (int i = 0; i < blocksToMove.Count; i++)
         {
-            nodesToMove[i].ClearConnection(); //Need to clear connection before moving
-            nodesToMove[i].CurrentBlock.transform.parent = groupToMoveDownCollumn.transform;
+            blocksToMove[i].ClearConnectionUpdateGridPosition(); //Need to clear connection before moving
+            blocksToMove[i].transform.parent = groupToMoveDownCollumn.transform;
         }
 
         objectToMove = groupToMoveDownCollumn;
@@ -328,29 +323,5 @@ public class ItemCollider : MonoBehaviour
         }
         Destroy(groupToMoveDownCollumn);
     }
-    IEnumerator MoveUpSingleBlockIfVoid()
-    {//Disabling the BoxCOllider when in movement, solve an issue where the collision were updated bizzarement
 
-        GameObject objectToMove = this.gameObject;
-        float maxYPosition = gridManager.GridSize.y;
-        Vector3Int startPosition = Vector3Int.RoundToInt(transform.position);
-        Vector3Int endPosition = new Vector3Int(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(maxYPosition), 0);
-
-        if (topHit.transform != null)
-        {
-            endPosition = Vector3Int.RoundToInt(topHit.transform.position);
-        }
-        endPosition += Vector3Int.down;
-
-        float t = 0;
-        float timeToTravel = 0.1f;
-        while (t < 1)
-        {
-            t += timeToTravel;
-            objectToMove.GetComponentInChildren<BlockSprite>().transform.localScale = new Vector3(.8f, 1.2f, 1);
-            objectToMove.transform.position = Vector3.Lerp(startPosition, endPosition, t);
-            yield return null;
-        }
-        objectToMove.GetComponentInChildren<BlockSprite>().transform.localScale = new Vector3Int(1, 1, 1);
-    }
 }

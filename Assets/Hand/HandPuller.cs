@@ -10,7 +10,7 @@ public class HandPuller : MonoBehaviour
     Queue<GameObject> blockStoredInHand = new Queue<GameObject>();
    [SerializeField] GridManager gridManager;
     bool isMoving = true;
-    [SerializeField] float timeToTravel = 0.1f;
+    [SerializeField] float blockTimeToTravel = 0.1f;
 
     void Start()
     {
@@ -85,7 +85,7 @@ public class HandPuller : MonoBehaviour
         objectToMove.GetComponent<BoxCollider>().enabled = false;
         while (t < 1)
         {
-            t += timeToTravel;
+            t += blockTimeToTravel*Time.deltaTime;
             objectToMove.GetComponentInChildren<BlockSprite>().transform.localScale = new Vector3(.8f, 1.2f, 1);
             objectToMove.transform.position = Vector3.Lerp(startposition, endPosition, t);
 

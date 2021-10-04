@@ -8,6 +8,7 @@ public class HandMover : MonoBehaviour
 
     bool isMoving;
     [SerializeField] Vector2Int gridSize;
+    [SerializeField] float HandSpeed = 200f;
     Transform spriteScale;
     bool allowMove;
 
@@ -77,7 +78,7 @@ public class HandMover : MonoBehaviour
     {
         isMoving = true;
         float t = 0;
-        float timeToTravel = .01f;
+        float timeToTravel = .1f/ HandSpeed;
         Vector3 startposition = transform.position;
         Vector3 endposition = transform.position + direction;
         int maxHandPosition = gridSize.x - 1;
@@ -88,7 +89,7 @@ public class HandMover : MonoBehaviour
         {
             spriteScale.localScale = new Vector3(1.2f, .8f, 1);
             transform.position = Vector3.Lerp(startposition, endposition, t / timeToTravel);
-            t += .01f;
+            t += .01f * Time.deltaTime;
             yield return null;
         }
         spriteScale.localScale = new Vector3Int(1, 1, 1);

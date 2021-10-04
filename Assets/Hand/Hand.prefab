@@ -188,6 +188,7 @@ MonoBehaviour:
   enableLoopMovement: 0
   gridManager: {fileID: 0}
   gridSize: {x: 0, y: 0}
+  HandSpeed: 200
 --- !u!65 &5288122867040224123
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -228,4 +229,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridManager: {fileID: 0}
-  timeToTravel: 0.1
+  blockTimeToTravel: 12

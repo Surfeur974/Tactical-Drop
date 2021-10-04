@@ -100,6 +100,42 @@ public class ItemCollider : MonoBehaviour
             gridManager.TestFor3Match();
         }
     }
+
+    IEnumerator UpdateConnectedTo()
+    {
+        //Debug.Log("UpdateConnectedTo called");
+        coordinates.x = Mathf.RoundToInt(transform.position.x);
+        coordinates.y = Mathf.RoundToInt(transform.position.y);
+        grid = gridManager.Grid;
+        block = GetComponent<Block>();
+
+        if (block == null) {yield break;}
+        //if (node.isInHand == true) { node.ClearConnection(); return; }
+
+        //UpdateRaycastOrigins();
+        //UpdateBoolCollisionState();
+        block.ClearConnectionUpdateGridPosition();
+
+        foreach(Vector2Int dir in directions)
+        {
+            AddConnectedBlock(block,dir);
+        }
+        yield return null;
+    }
+    private void AddConnectedBlock(Block block,Vector2Int dir)
+    {
+        if(grid.ContainsKey(coordinates + dir) && grid[coordinates + dir] != null)
+        {
+            if(dir == Vector2Int.up || dir == Vector2Int.down)
+            {
+            block.AddVerticalConnection(grid[coordinates + dir]);
+            }
+            else if (dir == Vector2Int.left || dir == Vector2Int.right)
+            {
+                block.AddHorizontalConnection(grid[coordinates + dir]);
+            }
+        }
+    }
     public void UpdateBoolCollisionState()
     {
         //Debug.Log("UpdateBoolCollisionState is called");
@@ -142,40 +178,6 @@ public class ItemCollider : MonoBehaviour
         raycastOrigins.down = new Vector2(bounds.center.x, bounds.min.y);
         raycastOrigins.right = new Vector2(bounds.center.x + bounds.extents.x, bounds.center.y);
         raycastOrigins.left = new Vector2(bounds.center.x - bounds.extents.x, bounds.center.y);
-    }
-    IEnumerator UpdateConnectedTo()
-    {
-        //Debug.Log("UpdateConnectedTo called");
-        coordinates = new Vector2Int(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y));
-        grid = gridManager.Grid;
-        block = GetComponent<Block>();
-
-        if (block == null) {yield break;}
-        //if (node.isInHand == true) { node.ClearConnection(); return; }
-
-        //UpdateRaycastOrigins();
-        //UpdateBoolCollisionState();
-        block.ClearConnectionUpdateGridPosition();
-
-        foreach(Vector2Int dir in directions)
-        {
-            AddConnectedBlock(block,dir);
-        }
-        yield return null;
-    }
-    private void AddConnectedBlock(Block block,Vector2Int dir)
-    {
-        if(grid.ContainsKey(coordinates + dir) && grid[coordinates + dir] != null)
-        {
-            if(dir == Vector2Int.up || dir == Vector2Int.down)
-            {
-            block.AddVerticalConnection(grid[coordinates + dir]);
-            }
-            else if (dir == Vector2Int.left || dir == Vector2Int.right)
-            {
-                block.AddHorizontalConnection(grid[coordinates + dir]);
-            }
-        }
     }
     public RaycastHit GetUpHitInfo()
     {

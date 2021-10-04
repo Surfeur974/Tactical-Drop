@@ -388,7 +388,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.75, y: 6.25, z: -10}
+  m_LocalPosition: {x: 2.5, y: 9, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -462,6 +462,14 @@ PrefabInstance:
       propertyPath: gridManager
       value: 
       objectReference: {fileID: 1782081422}
+    - target: {fileID: 900851901, guid: 519e752f0cacde3429487f1d5ff7e670, type: 3}
+      propertyPath: timeToTravel
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 900851901, guid: 519e752f0cacde3429487f1d5ff7e670, type: 3}
+      propertyPath: blockTimeToTravel
+      value: 12
+      objectReference: {fileID: 0}
     - target: {fileID: 2788004017364094854, guid: 519e752f0cacde3429487f1d5ff7e670, type: 3}
       propertyPath: m_Name
       value: Hand
@@ -509,6 +517,10 @@ PrefabInstance:
     - target: {fileID: 4892170211897292215, guid: 519e752f0cacde3429487f1d5ff7e670, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5111637132187878122, guid: 519e752f0cacde3429487f1d5ff7e670, type: 3}
+      propertyPath: HandSpeed
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 5111637132187878122, guid: 519e752f0cacde3429487f1d5ff7e670, type: 3}
       propertyPath: gridManager
@@ -581,7 +593,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7600123988129839331, guid: 592fd49581594ce46aacd027e600dcf1, type: 3}
       propertyPath: gridSize.y
-      value: 14
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 7600123988129839331, guid: 592fd49581594ce46aacd027e600dcf1, type: 3}
       propertyPath: colors.Array.data[0].a
